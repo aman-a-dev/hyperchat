@@ -1,0 +1,19 @@
+{
+  "name": "Hyper chat",
+  "short_name": "Hyperchat",
+  "description": "Modern CSS background patterns and gradients generator",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["chat", "conversation", "tools", "productivity"]
+}
