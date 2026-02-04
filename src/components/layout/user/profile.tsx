@@ -1,27 +1,20 @@
 'use client'
 
-import ProfileSettings from '@/components/layout/user/profile-settings'
 import Link from 'next/link'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { motion } from 'framer-motion'
-import { useState } from 'react'
+import { motion } from 'motion/react'
 import { authClient } from '@/lib/auth-client'
 import {
-   Calendar,
    MapPin,
    MoreHorizontal,
    MessageCircle,
    Briefcase,
-   Pencil
+   Pencil,
+   Settings,
+   LogOut
 } from 'lucide-react'
-import {
-   Sheet,
-   SheetContent,
-   SheetTrigger,
-   SheetTitle
-} from '@/components/ui/sheet'
 import {
    DropdownMenu,
    DropdownMenuContent,
@@ -30,15 +23,14 @@ import {
    DropdownMenuSeparator,
    DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import FadeUp from '@/animation/fade-up'
 
 export default function Profile() {
-   const { data: session } = authClient.useSession()
-   if (!session) {
-      return null
-   }
-   const { user } = session
-
-   /*const session = {
+   // const { data: session } = authClient.useSession()
+   // if (!session) {
+   //     return null
+   // }
+   const session = {
       user: {
          name: 'Amanuel Antenh',
          email: 'amanuelantenha@gmail.com',
@@ -49,47 +41,32 @@ export default function Profile() {
          country: 'Ethiopia',
          job: 'full  Stack  Web  Developer'
       }
-   }*/
+   }
+   const { user } = session
 
    return (
-      <div className=''>
-         {/* Cover Image with Gradient Animation */}
+      <FadeUp>
+         {/* Top */}
          <div
-            className='relative h-48 md:h-64 w-full overflow-hidden rounded-b-2xl'
+            className='h-5'
             role='img'
             aria-label='Profile cover background'
-         >
-            <motion.div
-               className='absolute inset-0'
-               animate={{
-                  background: [
-                     'linear-gradient(45deg, #cab300 0%, #ffe200 100%)',
-                     'linear-gradient(45deg, #ffe200 0%, #cab300 100%)'
-                  ]
-               }}
-               transition={{
-                  duration: 15,
-                  repeat: Infinity,
-                  ease: 'linear'
-               }}
-            />
-            <div className='absolute inset-0 bg-black/10' />
-         </div>
+         ></div>
 
          <div className='container max-w-4xl mx-auto px-4 sm:px-6 pb-6'>
             {/* Profile Header */}
             <div className='relative -mt-8 sm:-mt-8 mb-6 sm:mb-8 flex flex-col items-start gap-4 md:flex-row md:items-end md:justify-between'>
                <div className='flex items-end gap-4 sm:gap-6'>
                   <motion.div
-                     initial={{ scale: 0.9, opacity: 0 }}
+                     initial={{ scale: 0.1, opacity: 0 }}
                      animate={{ scale: 1, opacity: 1 }}
                      transition={{ delay: 0.2 }}
                      className='relative'
                   >
-                     <div className='h-24 w-24 sm:h-32 sm:w-32 overflow-hidden rounded border-4 border-background bg-background shadow-xl'>
-                        <Avatar className='h-full w-full rounded'>
+                     <div className='h-30 w-30 sm:h-35 sm:w-35 overflow-hidden rounded-[30%/30%] border-4 border-background bg-background shadow-xl'>
+                        <Avatar className='h-full w-full rounded-[30%/30%]'>
                            <AvatarImage
-                              src={user.image || ''}
+                              src={user.image}
                               alt={user.name || ''}
                               className='object-cover'
                            />
@@ -98,11 +75,7 @@ export default function Profile() {
                            </AvatarFallback>
                         </Avatar>
                      </div>
-                     <div
-                        className='absolute bottom-1 right-1 sm:bottom-2 sm:right-2 h-4 w-4 sm:h-5 sm:w-5 rounded-2xl border-4 border-background bg-emerald-500'
-                        aria-label='Online status: Active'
-                        role='status'
-                     />
+                     <div className='absolute bottom-1 right-1 sm:bottom-2 sm:right-2 h-6 w-6 rounded-2xl border-4 border-background bg-primary'></div>
                   </motion.div>
 
                   <div className='mb-1 sm:mb-2 space-y-0.5 sm:space-y-1'>
@@ -125,25 +98,16 @@ export default function Profile() {
                      />
                      Chat
                   </Button>
-
-                  <Sheet>
-                     <SheetTrigger asChild>
-                        <Button
-                           variant='outline'
-                           className='flex-1 md:flex-none'
-                           aria-label='Edit profile'
-                        >
-                           <Pencil />
-                           Edit
-                        </Button>
-                     </SheetTrigger>
-                     <SheetContent>
-                        <SheetTitle className='sr-only'>
-                           Edit Profile Settings
-                        </SheetTitle>
-                        <ProfileSettings />
-                     </SheetContent>
-                  </Sheet>
+                  <Link href='/settings/account'>
+                     <Button
+                        variant='outline'
+                        className='flex-1 md:flex-none'
+                        aria-label='Edit profile'
+                     >
+                        <Pencil />
+                        Edit
+                     </Button>
+                  </Link>
                   <DropdownMenu>
                      <DropdownMenuTrigger asChild>
                         <Button
@@ -159,16 +123,25 @@ export default function Profile() {
                         </Button>
                      </DropdownMenuTrigger>
                      <DropdownMenuContent>
-                        <DropdownMenuLabel>More</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <Link href='/profile/settings'>
-                           <DropdownMenuItem>Settings</DropdownMenuItem>
+                        <DropdownMenuLabel className='text-xs text-muted-foreground'>
+                           More
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator className='bg-gradient-to-r from-transparent via-zinc-200 to-transparent dark:via-zinc-800' />
+
+                        <Link href='/settings'>
+                           <DropdownMenuItem>
+                              <Settings />
+                              <span>Settings</span>
+                           </DropdownMenuItem>
                         </Link>
                         <Link
                            href='/'
                            onClick={() => authClient.signOut()}
                         >
-                           <DropdownMenuItem>Log out</DropdownMenuItem>
+                           <DropdownMenuItem>
+                              <LogOut />
+                              <span>Log out</span>
+                           </DropdownMenuItem>
                         </Link>
                      </DropdownMenuContent>
                   </DropdownMenu>
@@ -206,6 +179,6 @@ export default function Profile() {
                </div>
             </section>
          </div>
-      </div>
+      </FadeUp>
    )
 }

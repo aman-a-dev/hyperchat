@@ -1,7 +1,7 @@
 {
   "name": "Hyper chat",
   "short_name": "Hyperchat",
-  "description": "Modern CSS background patterns and gradients generator",
+  "description": "An AI-powered realtime chat platform that revolutionizes digital communication with intelligent messaging, smart replies, and seamless collaboration tools.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -10,10 +10,10 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "/icon/favicon.png",
       "sizes": "any",
       "type": "image/svg+xml"
     }
   ],
-  "categories": ["chat", "conversation", "tools", "productivity"]
+  "categories": ["chat", "conversation", "ai", "productivity"]
 }

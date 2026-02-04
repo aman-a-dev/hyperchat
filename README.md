@@ -87,7 +87,7 @@ npm run dev
 ```
 
 * Open your browser
-   Navigate tohttp://localhost:3000
+   Navigate to http://localhost:3000
 
 ## 🔧 Tech Stack
 

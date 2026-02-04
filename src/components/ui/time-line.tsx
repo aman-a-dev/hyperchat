@@ -4,9 +4,9 @@ import {
   Children,
   cloneElement,
   createContext,
-  CSSProperties,
-  HTMLAttributes,
-  ReactElement,
+  type CSSProperties,
+  type HTMLAttributes,
+  type ReactElement,
   useContext,
   useEffect,
   useLayoutEffect,
@@ -14,7 +14,7 @@ import {
   useState,
 } from "react";
 import { cn } from "@/lib/utils";
-import { cva, VariantProps } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
 
 // CSS VARIANTS
 

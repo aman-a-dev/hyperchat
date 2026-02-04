@@ -41,3 +41,8 @@ yarn-error.log*
 next-env.d.ts
 
 /generated/prisma
+
+# demo code
+
+/demo
+/src/app/demo

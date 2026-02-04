@@ -1,5 +1,4 @@
-import type { Metadata } from 'next'
-
+import type { Metadata } from "next";
 
 export default function BlogPage() {
   return (
@@ -10,29 +9,29 @@ export default function BlogPage() {
 }
 
 export const blogMetadata: Metadata = {
-  title: 'HyperChat Blog | AI Chat Insights, Tips & Updates',
-  description: 'Latest articles on AI communication, messaging trends, product updates, and best practices for using HyperChat effectively.',
+  title: "HyperChat Blog | AI Chat Insights, Tips & Updates",
+  description:
+    "Latest articles on AI communication, messaging trends, product updates, and best practices for using HyperChat effectively.",
   keywords: [
-    'chat platform blog',
-    'AI communication articles',
-    'messaging updates',
-    'chat tips',
-    'product announcements',
-    'communication trends',
-    'tech blog',
-    'AI chat insights',
-    'messaging best practices',
-    'industry news'
-  ].join(', '),
-
+    "chat platform blog",
+    "AI communication articles",
+    "messaging updates",
+    "chat tips",
+    "product announcements",
+    "communication trends",
+    "tech blog",
+    "AI chat insights",
+    "messaging best practices",
+    "industry news",
+  ].join(", "),
 
   alternates: {
-    canonical: 'https://hyper-chat.vercel.app/blog'
+    canonical: "https://hyper-chat.vercel.app/blog",
   },
 
   other: {
-    'article:section': 'Technology',
-    'article:tag': 'AI, Communication, Chat, Technology, Updates, Blog',
-    'og:updated_time': new Date().toISOString()
-  }
-}
+    "article:section": "Technology",
+    "article:tag": "AI, Communication, Chat, Technology, Updates, Blog",
+    "og:updated_time": new Date().toISOString(),
+  },
+};

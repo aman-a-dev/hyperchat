@@ -3,39 +3,51 @@ import { betterAuth } from 'better-auth'
 // orm
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { prisma } from './prisma'
+// plugins
+import { customSession } from 'better-auth/plugins'
 // email
 import { Resend } from 'resend'
 const resend = new Resend(process.env.RESEND_API_KEY)
-// plugins
-import { customSession } from 'better-auth/plugins'
+const from = process.env.BETTER_AUTH_EMAIL || 'delivered@resend.dev'
+const to = process.env.TEST_EMAIL || ''
 
 export const auth = betterAuth({
+   appName: 'Hyperchat',
    baseURL: process.env.BETTER_AUTH_URL,
    database: prismaAdapter(prisma, {
       provider: 'mysql'
    }),
    account: {
-		accountLinking: {
-			enabled: true,
-		}
-	},
+      accountLinking: {
+         trustedProviders: ['google']
+      }
+   },
    emailAndPassword: {
       enabled: true,
-      requireEmailVerification: true,
-      sendOnSignUp: true
+      //requireEmailVerification: true,
+      //sendOnSignUp: true,
+      async sendResetPassword({ user, url }) {
+         await resend.emails.send({
+            from,
+            to: user.email,
+            subject: 'Reset your password',
+            html: `<a href=${url}>Reset your password</a>`
+         })
+      }
    },
    socialProviders: {
       google: {
-         accessType: 'offline',
-         prompt: 'select_account consent',
-         clientId: process.env.AUTH_GOOGLE_CLIENT_ID as string,
-         clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET as string
+         clientId: process.env.AUTH_GOOGLE_CLIENT_ID || "",
+         clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET || ""
       }
    },
    advanced: {
       cookiePrefix: 'hyper-chat'
    },
    user: {
+     deleteUser: { 
+            enabled: true
+        } ,
       changeEmail: {
          enabled: true
       },
@@ -46,7 +58,7 @@ export const auth = betterAuth({
             request
          ) => {
             const { error } = await resend.emails.send({
-               from: 'Hyper-Chat <onboarding@yourdomain.com>',
+               from,
                to: user.email,
                subject: 'Delete Hyperchat account',
                html: `
@@ -65,7 +77,7 @@ export const auth = betterAuth({
    emailVerification: {
       sendVerificationEmail: async ({ user, url }) => {
          const { error } = await resend.emails.send({
-            from: 'Hyper-Chat <onboarding@hyper-chat.com>',
+            from,
             to: user.email,
             subject: 'Verify your email address',
             html: `
@@ -80,7 +92,7 @@ export const auth = betterAuth({
          })
 
          if (error) {
-            console.error('Failed to send verification email:', error)
+            console.error('‼️ Failed to send verification email:', error)
          }
       }
    },

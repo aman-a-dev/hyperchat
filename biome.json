@@ -13,9 +13,14 @@
       "!.next",
       "!dist",
       "!build",
-      "!src/ui",
+      "!src/components/ui",
+      "!src/lib",
+      "!src/components/shared",
+      "!src/hooks",
       "!generated",
-      "!prisma"
+      "!src/components/font",
+      "!prisma",
+      "!src/components/layout/chat/msg-input.tsx"
     ]
   },
   "formatter": {

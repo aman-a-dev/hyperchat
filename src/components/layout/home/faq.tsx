@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { HelpCircle } from "lucide-react";
-import { starborn } from "@/components/font/font";
+import { Bitshow } from "@/components/font/font";
 import {
   Accordion,
   AccordionContent,
@@ -82,7 +82,7 @@ export default function FAQ() {
             />
           </motion.div>
           <h2
-            className={`${starborn.className} mb-4 text-3xl font-bold sm:text-4xl md:text-5xl`}
+            className={`${Bitshow.className} mb-4 text-3xl font-bold sm:text-4xl md:text-5xl`}
           >
             Frequently Asked Questions
           </h2>
