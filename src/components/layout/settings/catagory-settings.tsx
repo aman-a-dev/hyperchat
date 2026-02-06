@@ -9,7 +9,7 @@ import {
    DialogTrigger,
    DialogTitle,
    DialogClose
-} from '@/components/ui/dialog'
+} from '@/components/ui/dialog2'
 import {
    Item,
    ItemActions,

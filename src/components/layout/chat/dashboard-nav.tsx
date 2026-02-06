@@ -16,7 +16,7 @@ export default function DashboardNav() {
       <>
          <div
             className={`${
-               /\/chats\/[0-9|a-z|A-Z]/.test(pathname) && 'hidden'
+               /\/chats\/[0-9|a-z|A-Z]/.test(pathname)  && 'hidden'
             } fixed h-14 top-0 right-0 left-0 flex items-center justify-between p-3 px-5 gap-2 z-10 bg-background/50 backdrop-blur-md border border-b border-sidebar-background`}
          >
             <div className='flex items-center gap-3'>

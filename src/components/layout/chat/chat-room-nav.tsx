@@ -24,7 +24,7 @@ export default function ChatRoomNav({
    email = 'amanarttik@gmail.com'
 }) {
    return (
-      <header className='flex items-center fixed top-0 left-0 right-0 w-full z-10 bg-background/50 backdrop-blur p-1 rounded-md shadow-md w-full px-2'>
+      <header className='flex items-center fixed top-0 left-0 right-0 w-full z-10 bg-background/50 backdrop-blur p-1 rounded-md shadow-md w-full px-2 border-b'>
          <Link href='/chats'>
             <Button variant='ghost'>
                <ArrowLeft />

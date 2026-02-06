@@ -24,8 +24,7 @@ import {
    Trash,
    ShieldX,
    MessageCircle,
-   Check,
-   
+   Check
 } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'motion/react'
@@ -38,6 +37,7 @@ interface UserItemProps {
    email?: string
    online?: boolean
    id: string | number // Required for selection
+   lastMsg: string
 
    // Selection Props
    isSelecting?: boolean
@@ -52,6 +52,7 @@ export default function UserItem({
    email = 'jonedoe@gmail.com',
    online,
    id,
+   lastMsg,
    isSelecting = false,
    isSelected = false,
    onSelect
@@ -125,13 +126,15 @@ export default function UserItem({
                   </ItemMedia>
                   <ItemContent>
                      <ItemTitle>{name}</ItemTitle>
-                     <ItemDescription className='truncate'>
+                     <ItemDescription className='truncate text-sm'>
                         {email}
                      </ItemDescription>
+                     <p className='text-xs text-muted-foreground whitespace-nowrap'>
+                       {lastMsg && `■ ${lastMsg}`}
+                     </p>
                   </ItemContent>
                </Link>
             </div>
-
             {/* Right Side: Dropdown Menu (Only if NOT selecting) */}
             {!isSelecting && (
                <DropdownMenu>

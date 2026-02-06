@@ -91,7 +91,7 @@ export function PowerOffSlide({
                   <motion.div
                      animate={controls}
                      aria-disabled={disabled}
-                     className={`absolute top-1 left-1 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-background shadow-md ${
+                     className={`absolute top-1 left-1 z-10 flex h-12 w-12 items-center justify-center rounded-full bg-card shadow-md ${
                         disabled
                            ? 'cursor-not-allowed opacity-50'
                            : 'cursor-grab active:cursor-grabbing'
@@ -110,7 +110,7 @@ export function PowerOffSlide({
                      }
                   >
                      <Power
-                        className='text-red-600'
+                        className='text-destructive'
                         size={32}
                      />
                   </motion.div>

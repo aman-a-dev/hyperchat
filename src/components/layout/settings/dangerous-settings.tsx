@@ -8,11 +8,13 @@ import {
    DialogTitle,
    DialogHeader,
    DialogClose
-} from '@/components/ui/dialog'
-import { Trash, MessageCircle, AlertCircleIcon } from 'lucide-react'
+} from '@/components/ui/dialog2'
+import { Trash, MessageCircle, AlertCircleIcon, LogOut } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { PowerOffSlide } from '@/components/ui/power-off-slide'
 import { useRef } from 'react'
+import { authClient } from '@/lib/auth-client'
+import ClientOnly from '@/components/shared/client-only'
 export default function DangerousSettings() {
    const delbtnRef = useRef()
    return (
@@ -55,10 +57,12 @@ export default function DangerousSettings() {
                         </p>
                      </AlertDescription>
                   </Alert>
+                  <ClientOnly>
                   <PowerOffSlide
                      label='Delete my account'
                      onPowerOff={() => delbtnRef.current.click()}
                   />
+                  </ClientOnly>
                   <Button
                      variant='destructive'
                      className='sr-only'
@@ -99,6 +103,13 @@ export default function DangerousSettings() {
                   </DialogClose>
                </DialogContent>
             </Dialog>
+            <Button
+               variant='destructive'
+               onClick={() => authClient.signOut()}
+            >
+               <span>Log out</span>
+               <LogOut />
+            </Button>
          </div>
       </div>
    )

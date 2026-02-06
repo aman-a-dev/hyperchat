@@ -12,14 +12,13 @@ import {
    DropdownMenuSeparator,
    DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-//import Gemini from '../icons/gemini'
+import { authClient } from '@/lib/auth-client'
 
 interface Profile {
    name: string
    email: string
-   avatar: string
-   subscription?: string
-   model?: string
+   image: string
+   //subscription?: string
 }
 
 interface MenuItem {
@@ -33,9 +32,8 @@ interface MenuItem {
 const SAMPLE_PROFILE_DATA: Profile = {
    name: 'Eugene An',
    email: 'eugene@kokonutui.com',
-   avatar: '/avatar.png',
-   subscription: 'PRO',
-   model: 'Gemini 2.0 Flash'
+   image: '/avatar.png'
+   //subscription: 'PRO',
 }
 
 interface ProfileDropdownProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -85,7 +83,7 @@ export function ProfileDropdown({
                <DropdownMenuTrigger asChild>
                   <button
                      type='button'
-                     className='flex items-center gap-16 p-3 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/60 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50/80 dark:hover:bg-zinc-800/40 hover:shadow-sm transition-all duration-200 focus:outline-none'
+                     className='flex items-center gap-16 p-3 rounded-2xl bg-card border border-zinc-200/60 dark:border-zinc-800/60 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50/80 dark:hover:bg-zinc-800/40 hover:shadow-sm transition-all duration-200 focus:outline-none'
                   >
                      <div className='text-left flex-1'>
                         <div className='text-sm font-medium text-zinc-900 dark:text-zinc-100 tracking-tight leading-tight'>
@@ -97,9 +95,9 @@ export function ProfileDropdown({
                      </div>
                      <div className='relative'>
                         <div className='w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 via-primary to-primary/80 p-0.5'>
-                           <div className='w-full h-full rounded-full overflow-hidden bg-white dark:bg-zinc-900'>
+                           <div className='w-full h-full rounded-full overflow-hidden bg-card'>
                               <Image
-                                 src={data.avatar}
+                                 src={data.image}
                                  alt={data.name}
                                  width={36}
                                  height={36}
@@ -146,7 +144,7 @@ export function ProfileDropdown({
                <DropdownMenuContent
                   align='end'
                   sideOffset={4}
-                  className='w-52 p-2 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-sm border border-zinc-200/60 dark:border-zinc-800/60 rounded-2xl shadow-xl shadow-zinc-900/5 dark:shadow-zinc-950/20 
+                  className='w-52 p-2 bg-card backdrop-blur-sm border border-zinc-200/60 dark:border-zinc-800/60 rounded-2xl shadow-xl shadow-zinc-900/5 dark:shadow-zinc-950/20 
                     data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-top-right'
                >
                   <div className='space-y-1'>
@@ -188,6 +186,7 @@ export function ProfileDropdown({
 
                   <DropdownMenuItem asChild>
                      <button
+                        onClick={() => authClient.signOut()}
                         type='button'
                         className='w-full flex items-center gap-3 p-3 duration-200 bg-red-500/10 rounded-xl hover:bg-red-500/20 cursor-pointer border border-transparent hover:border-red-500/30 hover:shadow-sm transition-all group'
                      >

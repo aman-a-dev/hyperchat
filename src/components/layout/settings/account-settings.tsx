@@ -28,7 +28,7 @@ import {
    UploadCloud
 } from 'lucide-react'
 import { useIsMobile } from '@/hooks/use-mobile'
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog2'
 import { PwInput } from '@/components/ui/pw-input'
 import {
    Item,
@@ -41,6 +41,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ProfileDropdown } from '@/components/ui/profile-dropdown'
 //import { Spinner } from '@/components/ui/spinner'
 import { toast } from 'sonner'
+import { useState, useEffect } from 'react'
 import {
    validateChangeUserData,
    validateImageType,
@@ -61,8 +62,8 @@ export default function AccountSettings() {
          email: 'amanuelantenha@gmail.com',
          image: '/avatar.png',
          bio: `Product Designer & Frontend Developer. Passionate about building beautiful, accessible user interfaces. Creating digital experiences that matter. ✨`,
-         country: '',
-         job: ''
+         country: 'Ethiopia',
+         job: 'Developer'
       }
    }
    //const { user } = session
@@ -81,7 +82,7 @@ export default function AccountSettings() {
          </p>
          <div className='mt-5 p-2 flex flex-col gap-2 md:grid md:grid-cols-2 justify-center'>
             <div className='w-full flex justify-center items-center col-span-2'>
-               <ProfileDropdown />
+               <ProfileDropdown data={session.user}/>
             </div>
             {isMobile ? (
                <>
@@ -104,7 +105,7 @@ export default function AccountSettings() {
                      </DrawerTrigger>
                      <DrawerContent>
                         <DrawerTitle className='sr-only'>Avatar</DrawerTitle>
-                        <AvatarOpration session={session} />
+                        <AvatarOperation session={session} />
                      </DrawerContent>
                   </Drawer>
                   <Drawer>
@@ -195,7 +196,7 @@ export default function AccountSettings() {
                      </DialogTrigger>
                      <DialogContent>
                         <DrawerTitle className='sr-only'>Email</DrawerTitle>
-                        <AvatarOpration session={session} />
+                        <AvatarOperation session={session} />
                      </DialogContent>
                   </Dialog>
                   <Dialog>
@@ -417,35 +418,126 @@ function PersonalDetailsOpration({ session }) {
             <FieldDescription>
                Your current resident country name (optional)
             </FieldDescription>
+            <hr />
             <Button type='submit'>Save Changes</Button>
          </Field>
       </form>
    )
 }
-function AvatarOpration({ session }) {
+
+function AvatarOperation({ session }) {
+   const [selectedFile, setSelectedFile] = useState(null)
+   const [previewUrl, setPreviewUrl] = useState(null)
+
+   // Validate file type & size
+   function validateImage(file) {
+      if (!file) return { valid: false, error: 'No file selected.' }
+
+      const allowed = [
+         'image/jpeg',
+         'image/png',
+         'image/webp',
+         'image/gif',
+         'image/avif',
+         'image/svg+xml'
+      ]
+      if (!allowed.includes(file.type)) {
+         return {
+            valid: false,
+            error: 'Unsupported file type. Please upload a JPEG/PNG/WEBP/GIF/AVIF/SVG.'
+         }
+      }
+
+      const maxSizeBytes = 5 * 1024 * 1024 // 5 MB
+      if (file.size > maxSizeBytes) {
+         return {
+            valid: false,
+            error: 'File is too large. Maximum size is 5 MB.'
+         }
+      }
+
+      return { valid: true }
+   }
+
+   // When user picks a file, validate and show preview (or a toast on error)
+   const handleFileChange = e => {
+      const file = e.target.files?.[0]
+      if (!file) return
+
+      const { valid, error } = validateImage(file)
+      if (!valid) {
+         toast.error(error)
+         // clear input and states so invalid file isn't retained
+         e.target.value = ''
+         setSelectedFile(null)
+         setPreviewUrl(null)
+         return
+      }
+
+      // create preview
+      const url = URL.createObjectURL(file)
+      setSelectedFile(file)
+      setPreviewUrl(url)
+   }
+
+   // Clean up object URL to avoid memory leaks
+   useEffect(() => {
+      return () => {
+         if (previewUrl) URL.revokeObjectURL(previewUrl)
+      }
+   }, [previewUrl])
+
+   async function updateAvatarAPI(file) {
+      return new Promise(resolve => {
+         setTimeout(
+            () =>
+               resolve({
+                  error: null,
+                  data: {
+                     /* new image url */
+                  }
+               }),
+            800
+         )
+      })
+   }
+
+   // Submit handler - update in DB via API (placeholder)
    const handleChangeAvatar = async e => {
-      const form = new FormData(e.currentTarget)
-      const avatar = form.get('avatar')
+      e.preventDefault()
+
+      if (!selectedFile) {
+         toast.error('Please choose an image before saving.')
+         return
+      }
+
+      // final validation before upload (defensive)
+      const { valid, error } = validateImage(selectedFile)
+      if (!valid) {
+         toast.error(error)
+         return
+      }
 
       try {
-         const isValid = validateImageType(type)
-         if (isValid) {
-            const { error } = await authClient.updateUser({
-               image: avatar
-            })
-            if (error) {
-               toast.error('An Error Occurred', {
-                  description: error
-               })
-            }
-            toast.success('Your profile picture changed successfully. ')
+         // Call real API here; currently placeholder
+         const result = await updateAvatarAPI(selectedFile)
+
+         if (result?.error) {
+            // If your API returns an error object/string
+            toast.error('An error occurred while updating your avatar.')
+            return
          }
+
+         // Success - show toast and optionally update session / user state
+         toast.success('Your profile picture changed successfully.')
+         // If you store the image URL in session.user.image, update it in parent state/store
+         // Example: onAvatarUpdated(result.data.url)
       } catch (err) {
-         toast.error('An Error Occurred', {
-            description: err
-         })
+         console.error(err)
+         toast.error('An Error Occurred while uploading the image.')
       }
    }
+
    return (
       <form
          onSubmit={handleChangeAvatar}
@@ -455,38 +547,54 @@ function AvatarOpration({ session }) {
             <FieldLegend className='text-center'>
                Update your Avatar
             </FieldLegend>
+
             <FieldLabel
                htmlFor='file'
                className='flex items-center justify-center relative'
             >
-               <div className='inset-0 bg-background/40 absolute flex items-center justify-center flex-col z-10'>
+               <div className='inset-0 bg-background/30 absolute flex items-center justify-center flex-col z-10 pointer-events-none'>
                   <span>Upload</span>
                   <UploadCloud />
                </div>
+
                <Avatar className='rounded-[30%/30%] h-36 w-36'>
-                  <AvatarImage src={session.user.image} />
+                  <AvatarImage src={previewUrl || session?.user?.image} />
                   <AvatarFallback className='rounded-[30%/30%]'>
-                     {session.user.name.slice(0, 1)}
+                     {session?.user?.name?.slice(0, 1) ?? 'U'}
                   </AvatarFallback>
                </Avatar>
             </FieldLabel>
+
             <Input
                required
                id='file'
                type='file'
                name='avatar'
-               className='hidden'
+               accept='image/*'
+               onChange={handleFileChange}
+               className='sr-only'
             />
 
-            <Button type='button'>
-               <span>AI Avatar</span>
-               <Sparkles />
-            </Button>
-            <Button type='submit'>Save Changes</Button>
+            <hr />
+
+            <div className='flex flex-col gap-1  md:mb-2'>
+               <Link href='/ai/profile'>
+                  <Button
+                     type='button'
+                     className='w-full'
+                  >
+                     <span>AI Avatar</span>
+                     <Sparkles />
+                  </Button>
+               </Link>
+
+               <Button type='submit'>Save Changes</Button>
+            </div>
          </Field>
       </form>
    )
 }
+
 function EmailOpration({ session }) {
    const handleChangeEmail = async e => {
       const form = new FormData(e.currentTarget)
@@ -497,7 +605,7 @@ function EmailOpration({ session }) {
          if (isValid) {
             const { error } = await authClient.changeEmail({
                newEmail: email,
-               callbackURL: '/profile' // to redirect after verification
+               callbackURL: '/profile'
             })
             if (error) {
                toast.error('An Error Occurred', {
@@ -541,6 +649,7 @@ function EmailOpration({ session }) {
             <FieldDescription>
                Enter a new Email for your hyper-chat account.
             </FieldDescription>
+            <hr />
             <Button type='submit'>Save New Email</Button>
          </Field>
       </form>
@@ -612,6 +721,7 @@ function PasswordOpration() {
                id='new-password'
                placeholder='********'
             />
+            <hr />
             <Button type='submit'>Save New Password</Button>
          </Field>
       </form>

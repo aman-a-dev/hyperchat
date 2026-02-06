@@ -31,7 +31,8 @@ export const contacts = [
       email: 'alice.johnson@example.com',
       src: '/avatar1.png',
       online: true,
-      link: '/chats/1'
+      link: '/chats/1',
+      lastMsg: 'Bye baby'
    },
    {
       id: '2',
@@ -47,7 +48,8 @@ export const contacts = [
       email: 'charlie.davis@example.com',
       src: '/avatar3.png',
       online: true,
-      link: '/chats/3'
+      link: '/chats/3',
+      lastMsg: 'good night 🌙 😴 ✨️ '
    },
    {
       id: '4',
@@ -379,8 +381,8 @@ function UserList({ users }: UserListProps) {
 
          <div className='flex flex-col lg:grid lg:grid-cols-2 justify-center p-3 gap-1 mt-14'>
             {users.length === 0 ? (
-               <Empty className='border border-4 border-dashed h-[90vh]'>
-                  <EmptyHeader>
+               <Empty className='h-[90vh] col-span-2'>
+                  <EmptyHeader className='w-full'>
                      <EmptyMedia className='m-5 -rotate-[30deg]'>
                         <Logo />
                      </EmptyMedia>
@@ -388,21 +390,22 @@ function UserList({ users }: UserListProps) {
                      <EmptyDescription>
                         This catagory doesn't contain any users.
                      </EmptyDescription>
-                     <EmptyContent>
-                        <Link href='/settings/catagory'>
-                           <Button>
-                              <Folders />
-                              <span>Add Users</span>
-                           </Button>
-                        </Link>
-                     </EmptyContent>
                   </EmptyHeader>
+                  <EmptyContent>
+                     <Link href='/settings/catagory'>
+                        <Button>
+                           <Folders />
+                           <span>Add Users</span>
+                        </Button>
+                     </Link>
+                  </EmptyContent>
                </Empty>
             ) : (
                users.map(contact => (
                   <UserItem
                      key={contact.id}
                      id={contact.id}
+                     lastMsg={contact.lastMsg}
                      link={contact.link + contact.id}
                      avatar={contact.src}
                      name={contact.name}

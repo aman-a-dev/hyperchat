@@ -20,11 +20,13 @@ import {
    Image,
    Edit,
    MapPin,
-   CircleDot
+   CircleDot,
+   Brain
 } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { VoiceInput } from '@/components/ui/voice-input'
 
 interface MsgInputProps {
    message: string
@@ -40,20 +42,8 @@ export default function MsgInput({
    const [isExpanded, setIsExpanded] = useState(false)
    const textareaRef = useRef<HTMLTextAreaElement>(null)
    const fileInputRef = useRef<HTMLInputElement>(null)
+   const [listening, setListening] = useState<boolean>(false)
    const isMobile = useIsMobile()
-
-   // const handleSubmit = (e: React.FormEvent) => {
-   //     e.preventDefault()
-
-   //     if (message.trim()) {
-   //       setMessage('')
-   //       setIsExpanded(false)
-
-   //       if (textareaRef.current) {
-   //           textareaRef.current.style.height = 'auto'
-   //       }
-   //     }
-   // }
 
    const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setMessage(e.target.value)
@@ -62,6 +52,7 @@ export default function MsgInput({
          textareaRef.current.style.height = 'auto'
          textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
       }
+
       if (isMobile) {
          setIsExpanded(
             e.target.value.length > 10 || e.target.value.includes('\n')
@@ -71,6 +62,12 @@ export default function MsgInput({
             e.target.value.length > 50 || e.target.value.includes('\n')
          )
       }
+   }
+   const onStart = () => {
+      setListening(true)
+   }
+   const onStop = () => {
+      setListening(false)
    }
 
    const handleKeyDown = (_e: React.KeyboardEvent) => {
@@ -127,8 +124,9 @@ export default function MsgInput({
                         onChange={handleTextareaChange}
                         onKeyDown={handleKeyDown}
                         placeholder='Your Message___'
-                        className='min-h-0 resize-none rounded-none border-0 p-0 text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 scrollbar-thin dark:bg-transparent'
+                        className='placeholder:whitespace-nowrap min-h-0 resize-none rounded-none border-0 p-0 text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 scrollbar-thin dark:bg-transparent'
                         rows={1}
+                        disabled={listening ? true : undefined}
                      />
                   </div>
                </div>
@@ -143,9 +141,9 @@ export default function MsgInput({
                            type='button'
                            variant='ghost'
                            size='icon'
-                           className='h-9 w-9 rounded-full hover:bg-accent outline-none ring-0'
+                           className='outline-none flex bg-card/50 backdrop-blur-lg cursor-pointer items-center justify-center rounded-full border p-2'
                         >
-                           <Plus className='size-6 text-muted-foreground' />
+                           <Plus />
                         </button>
                      </DropdownMenuTrigger>
 
@@ -223,15 +221,16 @@ export default function MsgInput({
                >
                   <div className='ms-auto flex items-center gap-1.5'>
                      <button
+                        disabled={listening ? true : undefined}
                         type='button'
                         variant='ghost'
                         size='icon'
-                        className='h-9 w-9 rounded-full hover:bg-accent'
+                        className='h-9 w-9 rounded-full hover:bg-accent relative'
                      >
-                        <Mic className='size-5 text-muted-foreground' />
+                        <Brain className='size-5 text-muted-foreground' />
                      </button>
-
                      <button
+                        disabled={listening ? true : undefined}
                         type='button'
                         variant='ghost'
                         size='icon'
@@ -239,6 +238,13 @@ export default function MsgInput({
                      >
                         <Edit className='size-5 text-muted-foreground' />
                      </button>
+
+                     {/*<Mic className='size-5 text-muted-foreground' />*/}
+                     <VoiceInput
+                        onStop={onStop}
+                        onStart={onStart}
+                        className={isExpanded && 'pr-1'}
+                     />
 
                      {message.trim() && (
                         <motion.button
@@ -248,6 +254,7 @@ export default function MsgInput({
                            transition={{ type: 'spring' }}
                            type='submit'
                            size='icon'
+                           onClick={()=> setIsExpanded(false)}
                            className='h-9 w-9 rounded-full text-background bg-primary flex justify-center items-center shadow-xl shadow-primary/30  hover:shadow-xl'
                         >
                            <ArrowRight className='size-6' />
