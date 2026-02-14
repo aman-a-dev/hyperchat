@@ -1,7 +1,5 @@
-import AIProfile from '@/components/layout/ai/ai-profile'
+import AIProfile from "@/components/layout/ai/ai-profile";
 
 export default function AIProfilePage() {
-  return (
-    <AIProfile/>
-  )
+  return <AIProfile />;
 }

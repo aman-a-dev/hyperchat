@@ -64,9 +64,10 @@ const ANIMATION_VARIANTS = {
 
 export default function ChatSearchBar({
    users = sampleUsers,
-   onOpen
+   onOpen,
+   query ,
+   setQuery
 }: ChatSearchBarProps) {
-   const [query, setQuery] = useState('')
    const [isOpen, setIsOpen] = useState(false)
    const [selectedUser, setSelectedUser] = useState<User | null>(null)
    const [activeIndex, setActiveIndex] = useState(-1)
@@ -83,14 +84,6 @@ export default function ChatSearchBar({
             u.email.toLowerCase().includes(q)
       )
    }, [debouncedQuery, users])
-
-   const handleInputChange = useCallback(
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-         setQuery(e.target.value)
-         setActiveIndex(-1)
-      },
-      []
-   )
 
    const handleKeyDown = useCallback(
       (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -155,9 +148,9 @@ export default function ChatSearchBar({
                      onClick={e => e.stopPropagation()}
                   >
                      <Input
-                        placeholder='Search users...'
+                        placeholder='Search users___'
                         value={query}
-                        onChange={handleInputChange}
+                        onChange={setQuery}
                         onKeyDown={handleKeyDown}
                         autoFocus
                         className='mb-3'

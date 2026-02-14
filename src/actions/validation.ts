@@ -89,15 +89,34 @@ export function validateChangeUserData(name, bio, job, _country) {
 
   return true;
 }
-export function validateImageType(type) {
-  if (type) {
-    toast.error("Invalid Image", {
-      description: "Try to upload image with png,gif,svg extensions.",
-    });
-    return false;
+export function validateImage(file) {
+  if (!file) return { valid: false, error: "No file selected." };
+
+  const allowed = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+    "image/avif",
+    "image/svg+xml",
+  ];
+  if (!allowed.includes(file.type)) {
+    return {
+      valid: false,
+      error:
+        "Unsupported file type. Please upload a JPEG/PNG/WEBP/GIF/AVIF/SVG.",
+    };
   }
 
-  return true;
+  const maxSizeBytes = 5 * 1024 * 1024; // 5 MB
+  if (file.size > maxSizeBytes) {
+    return {
+      valid: false,
+      error: "File is too large. Maximum size is 5 MB.",
+    };
+  }
+
+  return { valid: true };
 }
 export function validatePassWord(oldPassword, newPassword) {
   if (!oldPassword) {

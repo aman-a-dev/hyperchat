@@ -25,7 +25,7 @@ export default function SignIn() {
   const { data: session } = authClient.useSession();
   useEffect(() => {
     if (session) {
-      router.push("/dashboard");
+      router.push("/chats");
     }
   }, [session, router]); // Added dependencies
 
@@ -53,7 +53,7 @@ export default function SignIn() {
               setLoading(true);
             },
             onSuccess: () => {
-              router.push("/dashboard");
+              router.push("/chats");
               toast.success("You have signed in successfully");
             },
             onError: (ctx) => {

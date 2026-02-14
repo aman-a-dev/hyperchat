@@ -39,14 +39,14 @@ export default function Nav() {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const { theme, resolvedTheme } = useTheme();
-  //const { data: session } = authClient.useSession()
-  const session = {
-    user: {
-      name: "Amanuel Antenh",
-      email: "amanuelantenha@gmail.com",
-      image: "/avatar.png",
-    },
-  };
+  const { data: session } = authClient.useSession();
+  // const session = {
+  //   user: {
+  //     name: "Amanuel Antenh",
+  //     email: "amanuelantenha@gmail.com",
+  //     image: "/avatar.png",
+  //   },
+  // };
 
   useEffect(() => setMounted(true), []);
   if (!mounted) return null;

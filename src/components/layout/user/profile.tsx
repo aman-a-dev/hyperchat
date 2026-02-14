@@ -24,25 +24,10 @@ import {
    DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import FadeUp from '@/animation/fade-up'
+import { Spinner } from '@/components/ui/spinner'
 
 export default function Profile() {
-   // const { data: session } = authClient.useSession()
-   // if (!session) {
-   //     return null
-   // }
-   const session = {
-      user: {
-         name: 'Amanuel Antenh',
-         email: 'amanuelantenha@gmail.com',
-         image: '/avatar.png',
-         bio: `Product Designer & Frontend Developer. Passionate about
-                        building beautiful, accessible user interfaces. Creating
-                        digital experiences that matter. ✨`,
-         country: 'Ethiopia',
-         job: 'full  Stack  Web  Developer'
-      }
-   }
-   const { user } = session
+   const { data: session } = authClient.useSession()
 
    return (
       <FadeUp>
@@ -66,12 +51,12 @@ export default function Profile() {
                      <div className='h-30 w-30 sm:h-35 sm:w-35 overflow-hidden rounded-[30%/30%] border-4 border-background bg-background shadow-xl'>
                         <Avatar className='h-full w-full rounded-[30%/30%]'>
                            <AvatarImage
-                              src={user.image}
-                              alt={user.name || ''}
+                              src={session?.user.image}
+                              alt={session?.user.name || ''}
                               className='object-cover'
                            />
                            <AvatarFallback className='text-2xl sm:text-4xl'>
-                              {user.name.slice(0, 1)}
+                              {session?.user.name.slice(0, 1)}
                            </AvatarFallback>
                         </Avatar>
                      </div>
@@ -80,10 +65,10 @@ export default function Profile() {
 
                   <div className='mb-1 sm:mb-2 space-y-0.5 sm:space-y-1'>
                      <h1 className='text-xl sm:text-2xl font-bold tracking-tight text-foreground md:text-3xl'>
-                        {user.name || ''}
+                        {session?.user.name || ''}
                      </h1>
                      <p className='text-sm sm:text-base text-muted-foreground'>
-                        {user.email || ''}
+                        {session?.user.email || ''}
                      </p>
                   </div>
                </div>
@@ -156,7 +141,7 @@ export default function Profile() {
                <div className='space-y-6'>
                   <div className='space-y-4'>
                      <p className='text-sm sm:text-base leading-relaxed text-foreground/90'>
-                        {user.bio || '-'}
+                        {session?.user.bio || '-'}
                      </p>
 
                      <div className='flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground'>
@@ -165,14 +150,14 @@ export default function Profile() {
                               className='h-3.5 w-3.5 sm:h-4 sm:w-4'
                               aria-hidden='true'
                            />
-                           <span> {user.country || '-'}</span>
+                           <span> {session?.user.country || '-'}</span>
                         </div>
                         <div className='flex items-center gap-1.5'>
                            <Briefcase
                               className='h-3.5 w-3.5 sm:h-4 sm:w-4'
                               aria-hidden='true'
                            />
-                           <span> {user.job || '-'}</span>
+                           <span> {session?.user.job || '-'}</span>
                         </div>
                      </div>
                   </div>

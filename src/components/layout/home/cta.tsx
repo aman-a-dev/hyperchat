@@ -83,7 +83,7 @@ export default function CTA() {
       ref={ref}
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
-      className="w-full px-4 py-16 sm:px-6 lg:px-8"
+      className="w-full px-4 py-16 sm:px-6 lg:px-8 bg-cover bg-center bg-fixed bg-[url(/assets/flower-bg.png)] "
     >
       <div className="mx-auto max-w-5xl">
         <motion.div

@@ -97,7 +97,7 @@ export function ProfileDropdown({
                         <div className='w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 via-primary to-primary/80 p-0.5'>
                            <div className='w-full h-full rounded-full overflow-hidden bg-card'>
                               <Image
-                                 src={data.image}
+                                 src={data.image || '/icon/favicon.png'}
                                  alt={data.name}
                                  width={36}
                                  height={36}

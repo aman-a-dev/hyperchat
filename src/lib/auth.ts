@@ -37,19 +37,32 @@ export const auth = betterAuth({
    },
    socialProviders: {
       google: {
-         clientId: process.env.AUTH_GOOGLE_CLIENT_ID || "",
-         clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET || ""
+         clientId: process.env.AUTH_GOOGLE_CLIENT_ID || '',
+         clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET || ''
       }
    },
    advanced: {
       cookiePrefix: 'hyper-chat'
    },
    user: {
-     deleteUser: { 
-            enabled: true
-        } ,
+      deleteUser: {
+         enabled: true
+      },
       changeEmail: {
          enabled: true
+      },
+      changeEmail: {
+         enabled: true,
+         sendChangeEmailConfirmation: async (
+            { user, newEmail, url, token },
+            request
+         ) => {
+            await resend.emails.send({
+               to: user.email, 
+               subject: 'Approve email change',
+               text: `Click the link to approve the change to ${newEmail}: ${url}`
+            })
+         }
       },
       deleteUser: {
          enabled: true,

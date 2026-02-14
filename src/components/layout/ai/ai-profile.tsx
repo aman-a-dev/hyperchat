@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { useEffect, useRef, useState ,memo} from 'react'
-import Image from 'next/image'
-import { motion, AnimatePresence } from 'motion/react'
+import { useEffect, useRef, useState, memo } from "react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "motion/react";
 import {
   ArrowRight,
   Download,
@@ -12,182 +12,156 @@ import {
   X,
   UserPen,
   Sparkles,
-  Wand2,
-  Check
-} from 'lucide-react'
+  Check,
+} from "lucide-react";
 
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { InfiniteSlider } from '@/components/ui/infinite-slider'
-import ClientOnly from '@/components/shared/client-only'
-import { cn } from '@/lib/utils'
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { InfiniteSlider } from "@/components/ui/infinite-slider";
+import ClientOnly from "@/components/shared/client-only";
+import { cn } from "@/lib/utils";
 
 /* ---------------- TYPES ---------------- */
 
-type StylePreset = 'Realistic' | 'Anime' | 'Cinematic' | 'Pixel' | 'Minimal'
+type StylePreset = "Realistic" | "Anime" | "Cinematic" | "Pixel" | "Minimal";
 
 type ChatMessage =
   | {
-      id: number
-      role: 'user'
-      content: string
-      style: StylePreset
-      image?: string
+      id: number;
+      role: "user";
+      content: string;
+      style: StylePreset;
+      image?: string;
     }
   | {
-      id: number
-      role: 'ai'
-      images: string[]
-      prompt: string
-      style: StylePreset
-    }
+      id: number;
+      role: "ai";
+      images: string[];
+      prompt: string;
+      style: StylePreset;
+    };
 
 /* ---------------- DEMO DATA ---------------- */
 
 const STYLE_PRESETS: { label: StylePreset; icon: React.ReactNode }[] = [
-  { label: 'Realistic', icon: '🎨' },
-  { label: 'Anime', icon: '🌸' },
-  { label: 'Cinematic', icon: '🎬' },
-  { label: 'Pixel', icon: '🕹️' },
-  { label: 'Minimal', icon: '⚪' }
-]
-
-const SLIDER_DEMOS = [
-  {
-    src: '/avatar-1.png',
-    prompt: 'Realistic professional profile photo, soft lighting'
-  },
-  {
-    src: '/avatar-2.png',
-    prompt: 'Anime style avatar, clean lines, vibrant colors'
-  },
-  {
-    src: '/avatar-3.png',
-    prompt: 'Cinematic portrait, dark background, dramatic light'
-  },
-  {
-    src: '/avatar-4.png',
-    prompt: 'Pixel art avatar, retro 8-bit style'
-  },
-  {
-    src: '/avatar-5.png',
-    prompt: 'Minimalist flat avatar, modern UI style'
-  }
-]
+  { label: "Realistic", icon: "🎨" },
+  { label: "Anime", icon: "🌸" },
+  { label: "Cinematic", icon: "🎬" },
+  { label: "Pixel", icon: "🕹️" },
+  { label: "Minimal", icon: "⚪" },
+];
 
 /* ---------------- COMPONENT ---------------- */
 
 function AIProfile() {
-  const [started, setStarted] = useState(false)
-  const [prompt, setPrompt] = useState('')
-  const [style, setStyle] = useState<StylePreset>('Realistic')
-  const [messages, setMessages] = useState<ChatMessage[]>([])
-  const [loading, setLoading] = useState(false)
-  const [typing, setTyping] = useState('')
-  const [upload, setUpload] = useState<string | null>(null)
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [started, setStarted] = useState(false);
+  const [prompt, setPrompt] = useState("");
+  const [style, setStyle] = useState<StylePreset>("Realistic");
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [typing, setTyping] = useState("");
+  const [upload, setUpload] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const bottomRef = useRef<HTMLDivElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null)
-  const fileRef = useRef<HTMLInputElement | null>(null)
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const fileRef = useRef<HTMLInputElement | null>(null);
 
   /* auto scroll */
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, typing])
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, typing]);
 
   async function streamTyping(text: string) {
-    setTyping('')
+    setTyping("");
     for (let i = 0; i < text.length; i++) {
-      await new Promise(r => setTimeout(r, 20))
-      setTyping(prev => prev + text[i])
+      await new Promise((r) => setTimeout(r, 20));
+      setTyping((prev) => prev + text[i]);
     }
-    setTimeout(() => setTyping(''), 1000)
+    setTimeout(() => setTyping(""), 1000);
   }
 
   async function generate(promptText: string, preset: StylePreset) {
-    setLoading(true)
-    await streamTyping('Generating images…')
+    setLoading(true);
+    await streamTyping("Generating images…");
 
     // 🔴 DEMO IMAGES (replace with real API)
     const images = Array.from({ length: 1 }).map(
-      (_, i) => `/avatar-${(i % 5) + 1}.png`
-    )
+      (_, i) => `/avatar-${(i % 5) + 1}.png`,
+    );
 
-    setMessages(prev => [
+    setMessages((prev) => [
       ...prev,
       {
         id: Date.now(),
-        role: 'ai',
+        role: "ai",
         images,
         prompt: promptText,
-        style: preset
-      }
-    ])
+        style: preset,
+      },
+    ]);
 
-    setLoading(false)
+    setLoading(false);
   }
 
   async function handleSend() {
-    if (!prompt.trim() && !upload) return
-    if (!started) setStarted(true)
+    if (!prompt.trim() && !upload) return;
+    if (!started) setStarted(true);
 
-    const userPrompt = prompt
-    const preset = style
+    const userPrompt = prompt;
+    const preset = style;
 
-    setMessages(prev => [
+    setMessages((prev) => [
       ...prev,
       {
         id: Date.now(),
-        role: 'user',
-        content: userPrompt || 'Uploaded an image',
+        role: "user",
+        content: userPrompt || "Uploaded an image",
         style: preset,
-        image: upload || undefined
-      }
-    ])
+        image: upload || undefined,
+      },
+    ]);
 
-    setPrompt('')
-    setUpload(null)
-    await generate(userPrompt, preset)
+    setPrompt("");
+    setUpload(null);
+    await generate(userPrompt, preset);
   }
 
   function handleRegenerate(msg: ChatMessage) {
-    if (msg.role !== 'ai') return
-    generate(msg.prompt, msg.style)
+    if (msg.role !== "ai") return;
+    generate(msg.prompt, msg.style);
   }
 
   function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setUpload(URL.createObjectURL(file))
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUpload(URL.createObjectURL(file));
   }
 
   function downloadImage(src: string) {
-    const a = document.createElement('a')
-    a.href = src
-    a.download = 'ai-avatar.png'
-    a.click()
+    const a = document.createElement("a");
+    a.href = src;
+    a.download = "ai-avatar.png";
+    a.click();
   }
 
   function setAsProfile(src: string) {
-    setSelectedImage(src)
+    setSelectedImage(src);
     // In a real app, you would make an API call here
     setTimeout(() => {
-      setSelectedImage(null)
-    }, 2000)
+      setSelectedImage(null);
+    }, 2000);
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
     }
-  }
+  };
 
   return (
     <div className="flex flex-col h-screen bg-gradient-to-b from-background via-background/95 to-background/90">
-
-
       {/* MAIN CONTENT */}
       <main className="flex-1 overflow-hidden mt-10">
         {/* START SCREEN */}
@@ -226,8 +200,9 @@ function AIProfile() {
                     Create Your Perfect Avatar
                   </h2>
                   <p className="text-muted-foreground mb-8">
-                    Describe your ideal profile picture or upload a reference image.
-                    Choose from multiple styles to match your personality.
+                    Describe your ideal profile picture or upload a reference
+                    image. Choose from multiple styles to match your
+                    personality.
                   </p>
                 </motion.div>
 
@@ -242,7 +217,7 @@ function AIProfile() {
                     <Button
                       key={label}
                       size="sm"
-                      variant={style === label ? 'default' : 'outline'}
+                      variant={style === label ? "default" : "outline"}
                       className="gap-2 rounded-full"
                       onClick={() => setStyle(label)}
                     >
@@ -265,28 +240,56 @@ function AIProfile() {
                     <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-background to-transparent z-10" />
                     <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-background to-transparent z-10" />
                     <InfiniteSlider speed={15} gap={16} reverse>
-                      {SLIDER_DEMOS.map((item, i) => (
+                      {Array.from({ length: 10 }).map((_, i) => (
                         <motion.button
                           key={i}
                           whileHover={{ scale: 1.05, y: -4 }}
                           whileTap={{ scale: 0.95 }}
                           className="group relative rounded-2xl overflow-hidden border shadow-sm bg-card"
                           onClick={() => {
-                            setPrompt(item.prompt)
-                            textareaRef.current?.focus()
+                            //setPrompt(item.prompt)
+                            // textareaRef.current?.focus()
                           }}
                         >
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10" />
                           <Image
-                            src={item.src}
-                            alt={item.src}
+                            src={`/demo/ai_profle_(${i + 1}).webp`}
+                            alt={`ai_profile_(${i})`}
                             width={180}
                             height={180}
-                            className="rounded-2xl object-cover"
+                            className="rounded object-cover h-full w-full"
                           />
                           <div className="absolute bottom-2 left-2 right-2 z-20">
                             <p className="text-xs text-white/90 text-left truncate px-2">
-                              {item.prompt}
+                              {/*item.prompt*/ i}
+                            </p>
+                          </div>
+                        </motion.button>
+                      ))}
+                    </InfiniteSlider>
+                    <InfiniteSlider speed={15} gap={16}>
+                      {Array.from({ length: 10 }).map((item, i) => (
+                        <motion.button
+                          key={i}
+                          whileHover={{ scale: 1.05, y: -4 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="mt-3 group relative rounded-2xl overflow-hidden border shadow-sm bg-card"
+                          onClick={() => {
+                            //setPrompt(item.prompt)
+                            // textareaRef.current?.focus()
+                          }}
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10" />
+                          <Image
+                            src={`/demo/ai_profle_(${i + 10}).webp`}
+                            alt={`ai_profile_(${i})`}
+                            width={180}
+                            height={180}
+                            className="rounded object-cover h-full w-full"
+                          />
+                          <div className="absolute bottom-2 left-2 right-2 z-20">
+                            <p className="text-xs text-white/90 text-left truncate px-2">
+                              {/*item.prompt*/ i}
                             </p>
                           </div>
                         </motion.button>
@@ -317,16 +320,19 @@ function AIProfile() {
                         <div className="inline-flex items-center justify-center p-4 rounded-full bg-primary/10 mb-4">
                           <Sparkles className="h-8 w-8 text-primary" />
                         </div>
-                        <h3 className="text-lg font-medium mb-2">Start Creating</h3>
+                        <h3 className="text-lg font-medium mb-2">
+                          Start Creating
+                        </h3>
                         <p className="text-muted-foreground max-w-md mx-auto">
-                          Describe your ideal avatar or upload a reference image.
-                          The AI will generate multiple options based on your style.
+                          Describe your ideal avatar or upload a reference
+                          image. The AI will generate multiple options based on
+                          your style.
                         </p>
                       </motion.div>
                     )}
 
-                    {messages.map(msg =>
-                      msg.role === 'user' ? (
+                    {messages.map((msg) =>
+                      msg.role === "user" ? (
                         <motion.div
                           key={msg.id}
                           initial={{ opacity: 0, x: 20 }}
@@ -374,7 +380,9 @@ function AIProfile() {
                             <div className="p-1 rounded-md bg-primary/10">
                               <Sparkles className="h-3 w-3 text-primary" />
                             </div>
-                            <div className="text-xs font-medium">AI Generated</div>
+                            <div className="text-xs font-medium">
+                              AI Generated
+                            </div>
                             <div className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                               {msg.style}
                             </div>
@@ -385,12 +393,19 @@ function AIProfile() {
                             {msg.images.map((img, i) => (
                               <motion.div
                                 key={i}
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
+                                initial={{
+                                  opacity: 0,
+                                  scale: 0.9,
+                                }}
+                                animate={{
+                                  opacity: 1,
+                                  scale: 1,
+                                }}
                                 transition={{ delay: i * 0.1 }}
                                 className={cn(
                                   "group relative rounded-xl overflow-hidden border bg-card",
-                                  selectedImage === img && "ring-2 ring-primary ring-offset-2"
+                                  selectedImage === img &&
+                                    "ring-2 ring-primary ring-offset-2",
                                 )}
                               >
                                 <Image
@@ -400,7 +415,7 @@ function AIProfile() {
                                   height={200}
                                   className="w-full h-48 object-cover"
                                 />
-                                
+
                                 {/* Hover Overlay */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                                   <div className="absolute bottom-3 left-3 right-3 flex gap-2">
@@ -424,7 +439,9 @@ function AIProfile() {
                                       ) : (
                                         <UserPen size={12} />
                                       )}
-                                      {selectedImage === img ? 'Selected' : 'Use'}
+                                      {selectedImage === img
+                                        ? "Selected"
+                                        : "Use"}
                                     </Button>
                                   </div>
                                 </div>
@@ -446,14 +463,14 @@ function AIProfile() {
                             <Button
                               size="sm"
                               variant="outline"
-                              
                               className="gap-2"
                             >
                               <UserPen size={14} />
-                             Set as Profile                            </Button>
+                              Set as Profile{" "}
+                            </Button>
                           </div>
                         </motion.div>
-                      )
+                      ),
                     )}
 
                     {/* Typing Indicator */}
@@ -496,7 +513,7 @@ function AIProfile() {
                     <Button
                       key={label}
                       size="sm"
-                      variant={style === label ? 'default' : 'outline'}
+                      variant={style === label ? "default" : "outline"}
                       className="gap-1.5 rounded-full shrink-0"
                       onClick={() => setStyle(label)}
                     >
@@ -512,7 +529,7 @@ function AIProfile() {
             {upload && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
+                animate={{ opacity: 1, height: "auto" }}
                 className="flex items-center gap-3 p-3 rounded-lg border bg-card/50"
               >
                 <div className="relative">
@@ -555,57 +572,61 @@ function AIProfile() {
                   className="hidden"
                   onChange={handleUpload}
                 />
-                
-
 
                 <Textarea
                   ref={textareaRef}
                   value={prompt}
-                  onChange={e => setPrompt(e.target.value)}
+                  onChange={(e) => setPrompt(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Describe your avatar... (e.g., 'professional headshot with blue background')"
                   className="min-h-[60px] max-h-[120px] resize-none border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
                   disabled={loading}
                 />
-<div className="flex flex-col justify-between">
-                <Button
-                  size="icon"
-                  className="shrink-0 rounded-lg"
-                  onClick={handleSend}
-                  disabled={loading || (!prompt.trim() && !upload)}
-                >
-                  {loading ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <ArrowRight className="h-5 w-5" />
-                  )}
-                </Button>
-                                <Button
-                  size="icon"
-                  variant="outline"
-                  className="shrink-0 rounded-lg"
-                  onClick={() => fileRef.current?.click()}
-                  disabled={loading}
-                >
-                  <Paperclip size={18} />
-                </Button>
+                <div className="flex flex-col justify-between">
+                  <Button
+                    size="icon"
+                    className="shrink-0 rounded-lg"
+                    onClick={handleSend}
+                    disabled={loading || (!prompt.trim() && !upload)}
+                  >
+                    {loading ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <ArrowRight className="h-5 w-5" />
+                    )}
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="shrink-0 rounded-lg"
+                    onClick={() => fileRef.current?.click()}
+                    disabled={loading}
+                  >
+                    <Paperclip size={18} />
+                  </Button>
                 </div>
-
               </div>
             </div>
 
             {/* Helper Text */}
             <div className="text-center">
               <p className="text-xs text-muted-foreground">
-                Press <kbd className="px-1.5 py-0.5 rounded border text-xs">Enter</kbd> to send • 
-                <kbd className="mx-1 px-1.5 py-0.5 rounded border text-xs">Shift + Enter</kbd> for new line
+                Press{" "}
+                <kbd className="px-1.5 py-0.5 rounded border text-xs">
+                  Enter
+                </kbd>{" "}
+                to send •
+                <kbd className="mx-1 px-1.5 py-0.5 rounded border text-xs">
+                  Shift + Enter
+                </kbd>{" "}
+                for new line
               </p>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default memo(AIProfile)
+export default memo(AIProfile);

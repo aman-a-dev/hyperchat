@@ -1,26 +1,22 @@
-import { SidebarProvider } from "@/components/providers/providers";
-import DashboardNav from "@/components/layout/chat/dashboard-nav";
-import DashboardSidebar from "@/components/layout/chat/dashboard-sidebar";
+import { SidebarProvider } from '@/components/providers/providers'
+import DashboardNav from '@/components/layout/chat/dashboard-nav'
+import DashboardSidebar from '@/components/layout/chat/dashboard-sidebar'
+import Redirecting from '@/components/layout/auth/redirecting'
 
 export default function DashboardRootLayout({
-  children,
+   children
 }: Readonly<{
-  children: React.ReactNode;
+   children: React.ReactNode
 }>) {
-  return (
-    <SidebarProvider>
-      <DashboardSidebar />
-      <DashboardNav />
-      <div className="margin_left">{children}</div>
-      <style>
-        {`
-         @media (min-width: 768px) {
-  .margin_left{
-   margin-left: 16rem;}
-}
-
-         `}
-      </style>
-    </SidebarProvider>
-  );
+   return (
+      <SidebarProvider>
+         <DashboardSidebar />
+         <DashboardNav />
+            <div className='md:ml-[16rem]'>
+         <Redirecting>
+            {children}
+         </Redirecting>
+            </div>
+      </SidebarProvider>
+   )
 }

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Bitshow } from "@/components/font/font";
 import { TextEffect } from "@/components/font/text/text-effect";
 import { Button } from "@/components/ui/button";
-
+import Image from "next/image";
 const headlineVariants = {
   container: {
     hidden: {
@@ -37,7 +37,14 @@ const headlineVariants = {
 export default function Hero() {
   return (
     <DotGridBg>
-      <div className="flex flex-col items-center pt-20 z-1">
+      <div className="flex flex-col items-center pt-20 z-1 relative">
+        <Image
+          src="/assets/girl.png"
+          alt="girl image"
+          width={200}
+          height={300}
+          className="animate-wiggle absolute left-2 -bottom-5 md:w-64 md:left-1/4"
+        />
         <TextEffect
           className={`${Bitshow.className} scroll-m-20 text-center text-5xl font-extrabold tracking-tight text-balance md:w-[70%] lg:text-8xl space-y-2`}
           as="h1"
@@ -45,13 +52,22 @@ export default function Hero() {
           delay={0.5}
           variants={headlineVariants}
         >
-          Chat with Friend World Wide.
+          Chat with Friend
+        </TextEffect>
+        <TextEffect
+          className={`${Bitshow.className} z-10 scroll-m-20 text-center text-5xl font-extrabold tracking-tight text-balance md:w-[70%] lg:text-8xl space-y-2`}
+          as="h1"
+          per="char"
+          delay={0.5}
+          variants={headlineVariants}
+        >
+          World Wide.
         </TextEffect>
         <TextEffect
           per="word"
           as="p"
           preset="slide"
-          className="text-center font-black leading-7 [&:not(:first-child)]:mt-6 md:w-[50%]"
+          className="z-10 text-center font-black leading-7 [&:not(:first-child)]:mt-6 md:w-[50%]"
         >
           Enjoy seamless, private, and lightning‑fast chats. From quick updates
           to deep discussions, our platform makes every message count.
@@ -66,7 +82,7 @@ export default function Hero() {
           transition={{ duration: 1.5, delay: 2.5, type: "spring" }}
           className="flex gap-3 mt-3"
         >
-          <Link href="/sign-up">
+          <Link href="/sign-up" className="z-10">
             <Button
               size="lg"
               className="group gap-2 rounded-sm bg-primary px-8 py-6 text-primary-foreground shadow-lg shadow-primary/30 transition-transform duration-300 hover:translate-y-[-2px] hover:shadow-xl lg:w-52"
