@@ -139,7 +139,7 @@ export function validateImage(
 
 /* -------------------- Password -------------------- */
 
-export function validatePassword(
+export function validatePassWord(
   oldPassword: string,
   newPassword: string
 ): boolean {
@@ -165,7 +165,7 @@ export function validatePassword(
 
 /* -------------------- Category -------------------- */
 
-export function validateCategoryName(name: string): boolean {
+export function validateCatagoryName(name: string): boolean {
   if (!name) {
     toast.error("Category name is required");
     return false;
