@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { starborn } from "@/components/font/font";
+import { Bitshow } from "@/components/font/font";
 import { Button } from "@/components/ui/button";
 import { TriangleAlertIcon } from "lucide-react";
 
@@ -7,7 +7,7 @@ export default function SignInPage() {
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-2">
       <TriangleAlertIcon className="size-15" />
-      <h1 className={`${starborn.className} text-center text-5xl md:text-6xl`}>
+      <h1 className={`${Bitshow.className} text-center text-5xl md:text-6xl`}>
         An Error Occurred
       </h1>
       <p className="text-center">
