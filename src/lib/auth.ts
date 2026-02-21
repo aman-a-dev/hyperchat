@@ -58,7 +58,7 @@ export const auth = betterAuth({
             request
          ) => {
             await resend.emails.send({
-               to: user.email, 
+               to: user.email,
                subject: 'Approve email change',
                text: `Click the link to approve the change to ${newEmail}: ${url}`
             })
@@ -85,31 +85,7 @@ export const auth = betterAuth({
         `
             })
          }
-      }
-   },
-   emailVerification: {
-      sendVerificationEmail: async ({ user, url }) => {
-         const { error } = await resend.emails.send({
-            from,
-            to: user.email,
-            subject: 'Verify your email address',
-            html: `
-        <div style="display:flex;justify-content:center;text-align:center;flex-direction: column;align-items:center">
-          <h1 style="font-weight: bold;color: #cab300;">Welcome to Hyper-Chat ✋️</h1>
-          <p>Please click the link below 👇 to verify your email address:</p>
-          <a href="${url}" style="background-color:#FFD700;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;max-width: 300px;">Verify my Email</a>
-          <p><b>${user.email}</b> is going  to verify</p>
-          <p>If you didn't request this, please ignore this email.</p>
-        </div>
-        `
-         })
-
-         if (error) {
-            console.error('‼️ Failed to send verification email:', error)
-         }
-      }
-   },
-   user: {
+      },
       additionalFields: {
          bio: {
             type: 'string',
@@ -126,6 +102,28 @@ export const auth = betterAuth({
             required: false,
             input: false
          }
+      },
+      emailVerification: {
+         sendVerificationEmail: async ({ user, url }) => {
+            const { error } = await resend.emails.send({
+               from,
+               to: user.email,
+               subject: 'Verify your email address',
+               html: `
+        <div style="display:flex;justify-content:center;text-align:center;flex-direction: column;align-items:center">
+          <h1 style="font-weight: bold;color: #cab300;">Welcome to Hyper-Chat ✋️</h1>
+          <p>Please click the link below 👇 to verify your email address:</p>
+          <a href="${url}" style="background-color:#FFD700;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;max-width: 300px;">Verify my Email</a>
+          <p><b>${user.email}</b> is going  to verify</p>
+          <p>If you didn't request this, please ignore this email.</p>
+        </div>
+        `
+            })
+
+            if (error) {
+               console.error('‼️ Failed to send verification email:', error)
+            }
+         }
       }
    },
    plugins: [
@@ -135,7 +133,7 @@ export const auth = betterAuth({
                ...user,
                bio: user.bio,
                job: user.job,
-               country: user.country
+               country: user.country,
             },
             session
          }

@@ -12,7 +12,7 @@ export const GoogleIcon = (
 
 export function Logo({
   size = 100,
-  className, 
+  className,
   props,
 }: {
   size: number;

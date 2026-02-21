@@ -31,8 +31,9 @@ import { PasswordOperation } from './blocks/pw-update'
 
 export default function AccountSettings() {
    const isMobile = useIsMobile()
-   const { data: session, refetch } = authClient.useSession()
    const [avatarKey, setAvatarKey] = useState(Date.now()) // Force avatar re-render
+   const { data: session, isPending } = authClient.useSession()
+
 
    if (!session) return null
 
@@ -43,11 +44,11 @@ export default function AccountSettings() {
          setAvatarKey(Date.now())
       }
       // Optionally refetch to ensure consistency
-      refetch()
+      //refetch();
    }
 
    const handleDetailsUpdated = () => {
-      refetch() // Refresh session data
+      //refetch(); // Refresh session data
    }
 
    return (

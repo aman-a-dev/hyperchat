@@ -1,7 +1,11 @@
 "use client";
 import { motion } from "motion/react";
 
-export default function FadeUp({ children }) {
+export default function FadeUp({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <motion.div
       initial={{ y: 50, opacity: 0 }}

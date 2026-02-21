@@ -39,7 +39,13 @@ export default function ChatSearchBar({
    onOpen
 }: ChatSearchBarProps) {
    const [isOpen, setIsOpen] = useState(false)
-   const [users, setUsers] = useState<User[]>([])
+   const [users, setUsers] = useState<User[]>([
+      {
+         id: 'hvxeZrgc35gvcg',
+         name: 'Amanuel Antenh',
+         email: 'amanuelantenha@gmail.com'
+      }
+   ])
    const [loading, setLoading] = useState(false)
    const [activeIndex, setActiveIndex] = useState(-1)
 
@@ -47,7 +53,7 @@ export default function ChatSearchBar({
 
    // 🔥 Fetch users from DB
    useEffect(() => {
-      if (!debouncedQuery.trim()) {
+      if (!debouncedQuery) {
          setUsers([])
          return
       }
@@ -55,11 +61,9 @@ export default function ChatSearchBar({
       const fetchUsers = async () => {
          try {
             setLoading(true)
-            const res = await fetch(
-               `/api/users/search?q=${debouncedQuery}`
-            )
+            const res = await fetch(`/api/users/search?q=${debouncedQuery}`)
             const data = await res.json()
-            setUsers(data)
+            setUsers(prev => [...prev,data])
          } catch (err) {
             console.error(err)
          } finally {
@@ -109,7 +113,7 @@ export default function ChatSearchBar({
       <>
          {/* Trigger */}
          <Search
-            className="cursor-pointer"
+            className='cursor-pointer'
             onClick={() => {
                setIsOpen(true)
                onOpen?.()
@@ -119,47 +123,47 @@ export default function ChatSearchBar({
          <AnimatePresence>
             {isOpen && (
                <motion.div
-                  className="fixed inset-0 z-40 bg-background/40 backdrop-blur-md flex justify-center pt-10 px-3"
+                  className='fixed inset-0 z-40 flex justify-center pt-10 px-3'
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onClick={() => setIsOpen(false)}
                >
                   <motion.div
-                     className="w-full max-w-md bg-card rounded-xl p-4 shadow-lg"
+                     className='w-full max-w-md rounded-xl p-4 shadow-lg'
                      variants={ANIMATION.container}
-                     initial="hidden"
-                     animate="show"
-                     exit="hidden"
+                     initial='hidden'
+                     animate='show'
+                     exit='hidden'
                      onClick={e => e.stopPropagation()}
                   >
                      <Input
                         autoFocus
-                        placeholder="Search users..."
+                        placeholder='Search users...'
                         value={query}
                         onChange={e => setQuery(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        className="mb-2"
+                        className='mb-2 bg-background'
                      />
 
-                     <div className="text-xs text-muted-foreground mb-2">
+                     <div className='text-xs text-muted-foreground mb-2'>
                         Search by name or email
                      </div>
 
                      {loading && (
-                        <p className="text-sm text-muted-foreground">
+                        <p className='text-sm text-muted-foreground'>
                            Searching...
                         </p>
                      )}
 
                      {!query && (
-                        <p className="text-sm text-muted-foreground">
+                        <p className='text-sm text-muted-foreground'>
                            Start typing to search
                         </p>
                      )}
 
                      {!loading && query && users.length === 0 && (
-                        <p className="text-sm text-muted-foreground">
+                        <p className='text-sm text-muted-foreground'>
                            No users found
                         </p>
                      )}
@@ -179,7 +183,7 @@ export default function ChatSearchBar({
                                  }`}
                                  onClick={() => setIsOpen(false)}
                               >
-                                 <div className="flex items-center gap-3">
+                                 <div className='flex items-center gap-3'>
                                     <Avatar>
                                        <AvatarImage src={user.avatar ?? ''} />
                                        <AvatarFallback>
@@ -187,15 +191,18 @@ export default function ChatSearchBar({
                                        </AvatarFallback>
                                     </Avatar>
                                     <div>
-                                       <p className="text-sm font-medium">
+                                       <p className='text-sm font-medium'>
                                           {user.name}
                                        </p>
-                                       <p className="text-xs text-muted-foreground">
+                                       <p className='text-xs text-muted-foreground'>
                                           {user.email}
                                        </p>
                                     </div>
                                  </div>
-                                 <Button size="sm" variant="outline">
+                                 <Button
+                                    size='sm'
+                                    variant='outline'
+                                 >
                                     Chat
                                  </Button>
                               </motion.div>

@@ -1,4 +1,3 @@
-// prisma/schema.prisma
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -27,6 +26,13 @@ model User {
   // auth
   sessions      Session[]
   accounts      Account[]
+  
+  // chat
+  messages      Message[]
+  conversations Conversation[] @relation("ConversationParticipants")
+  
+  // settings
+  settings      Settings?
 
   @@unique([email])
   @@map("user")
@@ -79,3 +85,84 @@ model Verification {
 // =============== END BETTER AUTH TABLES ===============
 
 // =============== YOUR CUSTOM TABLES ===============
+
+model Conversation {
+  id        String    @id @default(cuid())
+  
+  image     String?   @db.Text // For group chats
+  name      String?   // For group chats
+  isGroup   Boolean   @default(false)
+  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  
+  messages  Message[]
+  users     User[]    @relation("ConversationParticipants")
+  
+  @@index([createdAt])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  content        String       @db.Text
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now()) @updatedAt
+  
+  // editing & replies
+  edited         Boolean      @default(false)
+  editedAt       DateTime?
+  
+  isAI           Boolean      @default(false)
+  
+  repliedToId    String?
+  repliedTo      Message?     @relation("MessageReply", fields: [repliedToId], references: [id], onDelete: SetNull)
+  replies        Message[]    @relation("MessageReply")
+  
+  forwardedFromId String?
+  forwardedFrom   Message?     @relation("MessageForward", fields: [forwardedFromId], references: [id], onDelete: SetNull)
+  forwardedTo     Message[]    @relation("MessageForward")
+  
+  type           MessageType  @default(TEXT)
+  
+  senderId       String
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([createdAt])
+}
+
+model Settings {
+  id             String       @id @default(cuid())
+  userId         String       @unique
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Visibility Settings
+  onlineStatusVisible Boolean  @default(true)
+  lastSeenVisible     Boolean  @default(true)
+  bioVisible          Boolean  @default(true)
+  jobVisible          Boolean  @default(true)
+  countryVisible      Boolean  @default(true)
+  
+  // Sync & Search Settings
+  syncEmails      Boolean      @default(true)
+  allowSearch     Boolean      @default(true)
+  
+  // Message Settings
+  showTypingStatus Boolean      @default(true)
+  
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @default(now()) @updatedAt
+  
+  @@map("settings")
+}
+
+enum MessageType {
+  TEXT
+  FILE
+  IMAGE 
+  VIDEO 
+}

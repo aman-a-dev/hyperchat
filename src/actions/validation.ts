@@ -11,7 +11,7 @@ export const validateEmail = (email: string): boolean => {
 export function validateSignUp(
   name: string,
   email: string,
-  password: string
+  password: string,
 ): boolean {
   if (!name || !email || !password) {
     toast.error("Missing Fields", { description: "All inputs are required." });
@@ -42,10 +42,7 @@ export function validateSignUp(
   return true;
 }
 
-export function validateSignIn(
-  email: string,
-  password: string
-): boolean {
+export function validateSignIn(email: string, password: string): boolean {
   if (!email || !password) {
     toast.error("Missing Fields", {
       description: "Email and password are required.",
@@ -69,7 +66,7 @@ export function validateChangeUserData(
   name: string,
   bio: string,
   job: string,
-  country?: string
+  country?: string,
 ): boolean {
   if (name.trim().length > 20) {
     toast.error("Invalid name", {
@@ -102,9 +99,7 @@ export interface ImageValidationResult {
   error?: string;
 }
 
-export function validateImage(
-  file: File | null
-): ImageValidationResult {
+export function validateImage(file: File | null): ImageValidationResult {
   if (!file) {
     return { valid: false, error: "No file selected." };
   }
@@ -141,7 +136,7 @@ export function validateImage(
 
 export function validatePassWord(
   oldPassword: string,
-  newPassword: string
+  newPassword: string,
 ): boolean {
   if (!oldPassword) {
     toast.error("Old password is required");

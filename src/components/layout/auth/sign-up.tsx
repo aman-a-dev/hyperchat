@@ -62,7 +62,7 @@ export default function Signup() {
             onSuccess: () => {
               setLoading(false);
               toast.success("Account created successfully!");
-              router.push("/chars");
+              router.push("/chats");
             },
             onError: (ctx) => {
               setLoading(false);

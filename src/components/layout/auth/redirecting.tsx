@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { authClient } from '@/lib/auth-client'
 import { Spinner } from '@/components/ui/spinner'
 
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 interface RedirectingProps {
    children: ReactNode
@@ -13,6 +13,7 @@ interface RedirectingProps {
 
 export default function Redirecting({ children }: RedirectingProps) {
    const { data: session, isPending } = authClient.useSession()
+
    const router = useRouter()
    const [isClient, setIsClient] = useState(false)
 
