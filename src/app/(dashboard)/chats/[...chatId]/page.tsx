@@ -3,7 +3,7 @@ import ChatRoom from "@/components/layout/chat/chat-room";
 export default async function ChatRoomPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ chatId: string }>;
 }) {
   const { chatId } = await params;
 

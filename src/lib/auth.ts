@@ -140,3 +140,22 @@ export const auth = betterAuth({
       })
    ]
 })
+
+
+import { headers } from 'next/headers';
+import type { NextRequest } from 'next/server';
+
+
+export async function getSession(req?: NextRequest) {
+  try {
+    // If we have a request object (in API routes), use its headers
+    const headersList = req ? req.headers : await headers();
+    const session = await auth.api.getSession({
+      headers: headersList,
+    });
+    return session;
+  } catch (error) {
+    console.error('Failed to get session:', error);
+    return null;
+  }
+}

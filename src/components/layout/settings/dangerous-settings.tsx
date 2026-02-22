@@ -16,7 +16,6 @@ import { useRef } from 'react'
 import { authClient } from '@/lib/auth-client'
 import ClientOnly from '@/components/shared/client-only'
 
-
 export default function DangerousSettings() {
    const delbtnRef = useRef<HTMLButtonElement | null>(null)
    return (
@@ -62,7 +61,10 @@ export default function DangerousSettings() {
                   <ClientOnly>
                      <PowerOffSlide
                         label='Delete my account'
-                        onPowerOff={() => delbtnRef.current.click()}
+                        onPowerOff={async () => {
+                           await authClient.signOut()
+                           delbtnRef.current.click()
+                        }}
                      />
                   </ClientOnly>
                   <Button

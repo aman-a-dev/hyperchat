@@ -18,25 +18,58 @@ model User {
   createdAt     DateTime
   updatedAt     DateTime
   
-  // additional
   bio           String?
   job           String?
   country       String?
   
-  // auth
   sessions      Session[]
   accounts      Account[]
   
-  // chat
-  messages      Message[]
-  conversations Conversation[] @relation("ConversationParticipants")
+  // Remove this line:
+  // conversations Conversation[] @relation("ConversationParticipants")
   
-  // settings
+  // Add this line:
+  userConversations UserConversation[]
+  
+  messages      Message[]
   settings      Settings?
 
   @@unique([email])
   @@map("user")
 }
+
+model Conversation {
+  id        String    @id @default(cuid())
+  image     String?   @db.Text
+  name      String?
+  isGroup   Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+
+  messages  Message[]
+  
+  // Remove this line:
+  // users     User[]    @relation("ConversationParticipants")
+  
+  // Add this line:
+  userConversations UserConversation[]
+
+  @@index([createdAt])
+}
+
+model UserConversation {
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  lastReadAt     DateTime?    // when the user last read this conversation
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@id([userId, conversationId])
+  @@map("user_conversation")
+}
+
 
 model Session {
   id        String   @id
@@ -86,21 +119,7 @@ model Verification {
 
 // =============== YOUR CUSTOM TABLES ===============
 
-model Conversation {
-  id        String    @id @default(cuid())
-  
-  image     String?   @db.Text // For group chats
-  name      String?   // For group chats
-  isGroup   Boolean   @default(false)
-  
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
-  
-  messages  Message[]
-  users     User[]    @relation("ConversationParticipants")
-  
-  @@index([createdAt])
-}
+
 
 model Message {
   id             String       @id @default(cuid())
@@ -159,6 +178,7 @@ model Settings {
   
   @@map("settings")
 }
+
 
 enum MessageType {
   TEXT

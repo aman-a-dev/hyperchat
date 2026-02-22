@@ -87,7 +87,7 @@ export default function ShowCase() {
 
               return (
                 <motion.div
-                  key={item.msg}
+                  key={y}
                   style={{
                     y,
                     scale,

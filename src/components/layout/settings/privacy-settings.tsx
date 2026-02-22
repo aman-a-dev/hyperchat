@@ -30,8 +30,8 @@ import { Checkbox } from '@/components/ui/checkbox2'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { Skeleton } from '@/components/ui/skeleton'   // shadcn skeleton
-import { toast } from 'sonner'                         // sonner toast
+import { Skeleton } from '@/components/ui/skeleton' // shadcn skeleton
+import { toast } from 'sonner' // sonner toast
 
 interface PrivacySettings {
    onlineStatus: boolean
@@ -81,7 +81,11 @@ export default function PrivacySetting() {
             }
          } catch (error) {
             console.error('Error fetching settings:', error)
-            toast.error(error instanceof Error ? error.message : 'Failed to load privacy settings')
+            toast.error(
+               error instanceof Error
+                  ? error.message
+                  : 'Failed to load privacy settings'
+            )
          } finally {
             setInitialLoading(false)
          }
@@ -120,7 +124,9 @@ export default function PrivacySetting() {
 
          if (!response.ok) {
             const errorData = await response.json().catch(() => ({}))
-            throw new Error(errorData.error || `Failed to save (Status: ${response.status})`)
+            throw new Error(
+               errorData.error || `Failed to save (Status: ${response.status})`
+            )
          }
 
          const data = await response.json()
@@ -129,7 +135,11 @@ export default function PrivacySetting() {
 
          console.log('Settings saved:', data)
       } catch (error) {
-         toast.error(error instanceof Error ? error.message : 'An error occurred while saving settings')
+         toast.error(
+            error instanceof Error
+               ? error.message
+               : 'An error occurred while saving settings'
+         )
          console.error('Error saving settings:', error)
       } finally {
          setLoading(false)
@@ -138,15 +148,17 @@ export default function PrivacySetting() {
 
    if (initialLoading) {
       return (
-         <div className='min-h-screen flex items-center justify-center'>
-            <div className='w-full max-w-md space-y-4'>
-               <Skeleton className='h-8 w-3/4 mx-auto' />
-               <Skeleton className='h-4 w-1/2 mx-auto' />
-               <div className='space-y-2'>
-                  <Skeleton className='h-12 w-full' />
-                  <Skeleton className='h-12 w-full' />
-                  <Skeleton className='h-12 w-full' />
-               </div>
+         <div className='min-h-screen flex flex-col w-full gap-1'>
+            <Skeleton className='h-8 w-3/4 mx-auto mt-5 mb-3' />
+            <Skeleton className='h-4 w-1/2 mx-auto mb-5' />
+            <div className='gap-2 md:grid-2 md:pace-x-2 space-y-2'>
+               <Skeleton className='h-12 w-full' />
+               <Skeleton className='h-12 w-full' />
+               <Skeleton className='h-12 w-full' />
+               <Skeleton className='h-12 w-full' />
+               <Skeleton className='h-12 w-full' />
+               <Skeleton className='h-12 w-full' />
+               <Skeleton className='h-12 w-full' />
             </div>
          </div>
       )
@@ -390,9 +402,7 @@ export default function PrivacySetting() {
                </ItemMedia>
                <ItemContent>
                   <ItemTitle>Search</ItemTitle>
-                  <ItemDescription>
-                     To appear when searching
-                  </ItemDescription>
+                  <ItemDescription>To appear when searching</ItemDescription>
                </ItemContent>
                <ItemActions>
                   <Switch
@@ -415,10 +425,10 @@ export default function PrivacySetting() {
                {loading ? (
                   <>
                      <Loader2 className='mr-2 h-5 w-5 animate-spin' />
-                     Saving...
+                     <span>Saving...</span>
                   </>
                ) : (
-                  `Save Changes${hasChanges ? ' *' : ''}`
+                  `Save Changes${hasChanges ? ' * ' : ''}`
                )}
             </Button>
          </div>

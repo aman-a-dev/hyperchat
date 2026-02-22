@@ -1,65 +1,157 @@
 'use client'
+
 import { useRef, useState, useEffect } from 'react'
+import { useParams } from 'next/navigation'
 import MsgInput from '@/components/layout/chat/msg-input'
 import Message from '@/components/layout/chat/message'
 import ChatRoomNav from '@/components/layout/chat/chat-room-nav'
+import { useConversation } from '@/hooks/use-conversation'
+import { useSession } from '@/lib/auth-client'
 
 export default function ChatRoom() {
+   const params = useParams()
+   const conversationId = params.chatId as string
+   const { data: session } = useSession()
+   const userId = session?.user?.id
+
+   const { messages, setMessages, loading } = useConversation(conversationId)
    const bottomRef = useRef<HTMLDivElement>(null)
-   const [message, setMessage] = useState('')
-   const [messages, setMessages] = useState<string[]>(demoMessages)
+   const [messageInput, setMessageInput] = useState('')
+
+   // Fetch initial messages
+   useEffect(() => {
+      if (!conversationId) return
+
+      const fetchMessages = async () => {
+         try {
+            const res = await fetch(
+               `/api/conversations/${conversationId}/messages`
+            )
+            if (!res.ok) throw new Error('Failed to fetch')
+            const data = await res.json()
+            setMessages(data)
+         } catch (error) {
+            console.error('Failed to fetch messages', error)
+         }
+      }
+
+      fetchMessages()
+   }, [conversationId, setMessages])
 
    const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
       bottomRef.current?.scrollIntoView({ behavior })
    }
 
-   const handleSendMsg = (e: React.FormEvent) => {
-      e.preventDefault()
-      if (!message.trim()) return
-
-      setMessages(prev => [
-         ...prev,
-         {
-            id: crypto.randomUUID(),
-            sender: 'user',
-            content: message,
-            timestamp: new Date()
-         }
-      ])
-
-      setMessage('')
-   }
-
-   // Scroll to bottom whenever messages change
    useEffect(() => {
       scrollToBottom()
    }, [messages])
 
-   // Scroll to bottom on initial render after DOM is ready
-   useEffect(() => {
-      requestAnimationFrame(() => scrollToBottom('auto')) // use 'auto' for instant scroll
-   }, [])
+   const handleSendMsg = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!messageInput.trim() || !userId) return;
+
+  const tempId = `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  const optimisticMessage = {
+    id: tempId,
+    content: messageInput,
+    senderId: userId,
+    sender: { id: userId, name: session?.user?.name || 'You', image: null },
+    createdAt: new Date(),
+    type: 'TEXT',
+    edited: false,
+  };
+
+  // Add optimistic message
+  setMessages((prev) => [...prev, optimisticMessage]);
+  setMessageInput('');
+
+  try {
+    const res = await fetch(`/api/conversations/${conversationId}/messages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: messageInput }),
+    });
+    if (!res.ok) throw new Error('Send failed');
+    const sentMessage = await res.json();
+
+    setMessages((prev) => {
+      // Remove the temporary optimistic message
+      const withoutTemp = prev.filter((m) => m.id !== tempId);
+      // Add the real message only if it's not already present (e.g., from Ably)
+      if (!withoutTemp.some((m) => m.id === sentMessage.id)) {
+        return [...withoutTemp, sentMessage];
+      }
+      return withoutTemp; // real message already there
+    });
+  } catch (error) {
+    console.error('Send error', error);
+    // Remove optimistic message on failure
+    setMessages((prev) => prev.filter((m) => m.id !== tempId));
+  }
+};
+
+   const handleEditMessage = async (messageId: string, newContent: string) => {
+      if (!newContent?.trim()) return
+      try {
+         const res = await fetch(`/api/messages/${messageId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: newContent })
+         })
+         if (!res.ok) {
+            const errorText = await res.text()
+            console.error('Edit failed:', res.status, errorText)
+            throw new Error('Edit failed')
+         }
+         const updated = await res.json()
+         setMessages(prev => prev.map(m => (m.id === messageId ? updated : m)))
+      } catch (error) {
+         console.error('Edit error', error)
+      }
+   }
+
+   const handleDeleteMessage = async (messageId: string) => {
+      try {
+         const res = await fetch(`/api/messages/${messageId}`, {
+            method: 'DELETE'
+         })
+         if (!res.ok) throw new Error('Delete failed')
+         setMessages(prev => prev.filter(m => m.id !== messageId))
+      } catch (error) {
+         console.error('Delete error', error)
+      }
+   }
 
    return (
       <div className='flex flex-col justify-center p-3 mt-5 min-h-screen'>
-         <ChatRoomNav />
-         <div className='md:m-0 pt-5 pb-64 md:pb-52  overflow-y-scroll'>
+         <ChatRoomNav conversationId={conversationId} />
+         <div className='md:m-0 pt-5 pb-64 md:pb-52 overflow-y-scroll'>
             <ul>
                {messages.map(msg => (
                   <Message
-                     key={msg.id} // stable key
+                     key={msg.id}
                      id={msg.id}
-                     sender={msg.sender}
-                     url='/'
+                     sender={msg.senderId === userId ? 'user' : 'other'}
+                     url={`/${msg.sender?.email?.split('@')[0] || ''}`}
                      content={msg.content}
-                     timestamp={msg.timestamp}
+                     timestamp={new Date(msg.createdAt)}
+                     onEdit={
+                        msg.senderId === userId && !msg.id.startsWith('temp-')
+                           ? newContent => handleEditMessage(msg.id, newContent)
+                           : undefined
+                     }
+                     onDelete={
+                        msg.senderId === userId && !msg.id.startsWith('temp-')
+                           ? () => handleDeleteMessage(msg.id)
+                           : undefined
+                     }
                   />
                ))}
             </ul>
 
             <MsgInput
-               message={message}
-               setMessage={setMessage}
+               message={messageInput}
+               setMessage={setMessageInput}
                onSend={handleSendMsg}
             />
 
@@ -68,40 +160,3 @@ export default function ChatRoom() {
       </div>
    )
 }
-type demoMessagesTypes = {
-   id: string
-   sender: string
-   content: string
-   timestamp: string
-}
-
-const demoMessages: demoMessagesTypes[] = [
-   {
-      id: 'etfxae578okb',
-      sender: 'user',
-      content:
-         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Velit sequi a ullam ad excepturi, exercitationem fugit nesciunt sed reprehenderit molestiae ab hic delectus architecto quia totam sint quo, inventore, tempora',
-      timestamp: new Date()
-   },
-   {
-      id: 'etfxae58okb',
-      sender: 'other',
-      url: '/',
-      content:
-         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Velit sequi a ullam ad excepturi, exercitationem fugit nesciunt sed reprehenderit molestiae ab hic delectus architecto quia totam sint quo, inventore, tempora',
-      timestamp: new Date()
-   },
-   {
-      id: 'etfae578okb',
-      sender: 'user',
-      content: 'Hello there!',
-      timestamp: new Date()
-   },
-   {
-      id: 'etfxae57kb',
-
-      content:
-         'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Veritatis qui, accusamus doloremque doloribus laborum officia labore pariatur aliquid assumenda architecto nihil quas nam voluptas cum adipisci, voluptatum enim rerum iusto.',
-      timestamp: new Date()
-   }
-]

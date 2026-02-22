@@ -14,7 +14,6 @@ import { PwInput } from "@/components/ui/pw-input";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { validatePassWord } from "@/actions/validation";
-import { updatePasswordAction } from "@/actions/update";
 
 export function PasswordOperation() {
   const [isLoading, setIsLoading] = useState(false);

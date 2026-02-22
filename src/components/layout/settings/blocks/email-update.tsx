@@ -13,7 +13,6 @@ import { Mail } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { validateEmail } from "@/actions/validation";
-import { updateEmailAction } from "@/actions/update";
 
 interface EmailOperationProps {
   session: {
