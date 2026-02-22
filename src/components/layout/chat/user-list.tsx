@@ -1,15 +1,14 @@
-"use client";
+'use client';
 
-import { useState, useCallback } from "react";
-import { SmoothTab } from "@/components/ui/smooth-tab";
-import UserItem from "./user-item";
+import { useState, useCallback } from 'react';
+import UserItem from './user-item';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 import {
   MoreVertical,
   Share2,
@@ -18,11 +17,11 @@ import {
   List,
   Folders,
   Search,
-} from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
-import { toast } from "sonner"; // Optional: for notifications
-import Link from "next/link";
-import { Logo } from "@/components/icon/icons";
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { toast } from 'sonner';
+import Link from 'next/link';
+import { Logo } from '@/components/icon/icons';
 import {
   Empty,
   EmptyContent,
@@ -30,27 +29,36 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/components/ui/empty";
+} from '@/components/ui/empty';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  src: string;
+  online?: boolean;
+  link: string;
+  lastMsg: string;
+  unreadCount?: number;
+}
 
 interface UserListProps {
-  users: typeof contacts;
+  users: User[];
 }
 
 function UserList({ users }: UserListProps) {
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 
-  // Toggle Selection Mode
   const toggleSelectionMode = useCallback(() => {
     setIsSelecting((prev) => {
       if (!prev) {
-        setSelectedUserIds([]); // Clear selection when entering mode
+        setSelectedUserIds([]);
       }
       return !prev;
     });
   }, []);
 
-  // Handle Selecting/Deselecting a user
   const handleUserSelect = useCallback((id: string) => {
     setSelectedUserIds((prev) => {
       if (prev.includes(id)) {
@@ -61,45 +69,30 @@ function UserList({ users }: UserListProps) {
     });
   }, []);
 
-  // Handle Delete Action
   const handleDelete = useCallback(() => {
     if (selectedUserIds.length === 0) return;
-
-    console.log("Deleting users:", selectedUserIds);
-    // Perform API call here to delete from DB
-    // e.g. await fetch('/api/users/delete', { method: 'POST', body: JSON.stringify({ ids: selectedUserIds }) })
-
+    console.log('Deleting users:', selectedUserIds);
     toast.success(`Deleted ${selectedUserIds.length} users`);
-
-    // Reset State
     setIsSelecting(false);
     setSelectedUserIds([]);
   }, [selectedUserIds]);
 
-  // Handle Share Action
   const handleShare = useCallback(() => {
     if (selectedUserIds.length === 0) return;
-
-    console.log("Sharing users:", selectedUserIds);
-    // Perform API call or clipboard action
-    // e.g. navigator.clipboard.writeText(`Check out these users: ${selectedUserIds.join(',')}`)
-
+    console.log('Sharing users:', selectedUserIds);
     toast.success(`Shared ${selectedUserIds.length} users`);
-
-    // Reset State
     setIsSelecting(false);
     setSelectedUserIds([]);
   }, [selectedUserIds]);
 
   return (
-    <div className="relative flex w-full flex-col justify-between  h-full">
+    <div className="relative flex w-full flex-col justify-between h-full">
       {/* Header with Selection Trigger */}
       <QuickDropDown
         toggleSelectionMode={toggleSelectionMode}
         isSelecting={isSelecting}
       />
       {/* Scrollable List Area */}
-
       <div className="flex flex-col lg:grid lg:grid-cols-2 justify-center p-3 gap-1 mt-14">
         {users?.length === 0 ? (
           <Empty className="h-[90vh] col-span-2">
@@ -109,7 +102,7 @@ function UserList({ users }: UserListProps) {
               </EmptyMedia>
               <EmptyTitle>No Chat Yet.</EmptyTitle>
               <EmptyDescription>
-                This catagory doesn't contain any users.
+                This category doesn't contain any users.
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
@@ -120,25 +113,26 @@ function UserList({ users }: UserListProps) {
             </EmptyContent>
           </Empty>
         ) : (
-          users?.map((contact) => (
+          users?.map((user) => (
             <UserItem
-              key={contact.id}
-              id={contact.id}
-              lastMsg={contact.lastMsg}
-              link={contact.link + contact.id}
-              avatar={contact.src}
-              name={contact.name}
-              email={contact.email}
-              online={contact.online}
+              key={user.id}
+              id={user.id}
+              lastMsg={user.lastMsg}
+              link={user.link}
+              avatar={user.src}
+              name={user.name}
+              email={user.email}
+              online={user.online}
+              unreadCount={user.unreadCount}
               isSelecting={isSelecting}
-              isSelected={selectedUserIds.includes(contact.id)}
+              isSelected={selectedUserIds.includes(user.id)}
               onSelect={handleUserSelect}
             />
           ))
         )}
       </div>
 
-      {/* Bottom Action Bar (Similar to InteractiveImageSelector) */}
+      {/* Bottom Action Bar */}
       <AnimatePresence>
         {isSelecting && (
           <motion.div
@@ -186,45 +180,14 @@ function UserList({ users }: UserListProps) {
     </div>
   );
 }
-const chatCategories = [
-  {
-    id: "all",
-    title: "All",
-    users: [],
-  },
-];
-export default function CategorizedChats() {
-  const [activeCategory, setActiveCategory] = useState(
-    chatCategories[0]?.id || "",
-  );
 
-  const currentCategory = chatCategories.find((c) => c.id === activeCategory);
-
-  return (
-    <div className="h-full w-full mb-16">
-      {/* CATEGORY CONTENT */}
-      <UserList users={currentCategory?.users || []} />
-
-      {/* CATEGORY TABS */}
-      <SmoothTab
-        items={chatCategories?.map((c) => ({
-          id: c.id,
-          title: c.title,
-        }))}
-        value={activeCategory}
-        onChange={setActiveCategory}
-      />
-    </div>
-  );
-}
-
-export function QuickDropDown({ isSelecting, toggleSelectionMode }) {
+function QuickDropDown({ isSelecting, toggleSelectionMode }: any) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
         asChild
         className={`${
-          isSelecting && "hidden"
+          isSelecting && 'hidden'
         } fixed top-2 right-14 z-10 p-3 flex justify-center items-center`}
       >
         <Button variant="ghost" size="icon">
@@ -237,12 +200,12 @@ export function QuickDropDown({ isSelecting, toggleSelectionMode }) {
           onClick={toggleSelectionMode}
           className="flex justify-between items-center"
         >
-          <span>{isSelecting ? "Cancel Selection" : "Select Users"}</span>
+          <span>{isSelecting ? 'Cancel Selection' : 'Select Users'}</span>
           <List />
         </DropdownMenuItem>
-        <Link href="/settings/catagory">
+        <Link href="/settings/category">
           <DropdownMenuItem className="flex justify-between items-center">
-            <span>Catagorys</span>
+            <span>Categories</span>
             <Folders />
           </DropdownMenuItem>
         </Link>
@@ -250,3 +213,5 @@ export function QuickDropDown({ isSelecting, toggleSelectionMode }) {
     </DropdownMenu>
   );
 }
+
+export default UserList;

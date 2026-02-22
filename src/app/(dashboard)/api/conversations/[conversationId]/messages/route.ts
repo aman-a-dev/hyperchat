@@ -18,10 +18,14 @@ export async function GET(
     const limit = parseInt(searchParams.get('limit') || '50');
     const before = searchParams.get('before');
 
-    const conversation = await prisma.conversation.findFirst({
-      where: { id: conversationId, users: { some: { id: session.user.id } } },
+    // Verify user belongs to this conversation via UserConversation
+    const userConv = await prisma.userConversation.findFirst({
+      where: {
+        userId: session.user.id,
+        conversationId,
+      },
     });
-    if (!conversation) {
+    if (!userConv) {
       return NextResponse.json({ error: 'Conversation not found' }, { status: 404 });
     }
 
@@ -32,7 +36,13 @@ export async function GET(
       orderBy: { createdAt: 'desc' },
       include: {
         sender: { select: { id: true, name: true, image: true } },
-        repliedTo: { select: { id: true, content: true, sender: { select: { name: true } } } },
+        repliedTo: {
+          select: {
+            id: true,
+            content: true,
+            sender: { select: { name: true } },
+          },
+        },
         forwardedFrom: { select: { id: true, content: true } },
       },
     });
@@ -58,16 +68,24 @@ export async function POST(
     const { content, type = 'TEXT', repliedToId } = await req.json();
 
     if (!content?.trim()) {
-      return NextResponse.json({ error: 'Message content is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Message content is required' },
+        { status: 400 }
+      );
     }
 
-    const conversation = await prisma.conversation.findFirst({
-      where: { id: conversationId, users: { some: { id: session.user.id } } },
+    // Verify user is part of the conversation via UserConversation
+    const userConv = await prisma.userConversation.findFirst({
+      where: {
+        userId: session.user.id,
+        conversationId,
+      },
     });
-    if (!conversation) {
+    if (!userConv) {
       return NextResponse.json({ error: 'Conversation not found' }, { status: 404 });
     }
 
+    // Create message in DB
     const message = await prisma.message.create({
       data: {
         content,
@@ -78,13 +96,33 @@ export async function POST(
       },
       include: {
         sender: { select: { id: true, name: true, image: true } },
-        repliedTo: { select: { id: true, content: true, sender: { select: { name: true } } } },
+        repliedTo: {
+          select: {
+            id: true,
+            content: true,
+            sender: { select: { name: true } },
+          },
+        },
       },
     });
 
+    // Publish to Ably – conversation channel and user channels
     const ably = getAblyServer();
     const channel = ably.channels.get(`conversation:${conversationId}`);
     await channel.publish('new-message', message);
+
+    // Also publish to each participant's user channel for real-time conversation list update
+    const participants = await prisma.userConversation.findMany({
+      where: { conversationId },
+      select: { userId: true },
+    });
+    for (const participant of participants) {
+      const userChannel = ably.channels.get(`user:${participant.userId}`);
+      await userChannel.publish('new-message', {
+        conversationId,
+        message,
+      });
+    }
 
     return NextResponse.json(message);
   } catch (error) {

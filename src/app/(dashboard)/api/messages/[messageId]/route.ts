@@ -24,11 +24,23 @@ export async function DELETE(
       return NextResponse.json({ error: 'Not allowed' }, { status: 403 });
     }
 
+    // Optionally verify user still has access to conversation (though not strictly needed for delete)
+    const userConv = await prisma.userConversation.findFirst({
+      where: { userId: session.user.id, conversationId: message.conversationId },
+    });
+    if (!userConv) {
+      return NextResponse.json({ error: 'Conversation not found' }, { status: 404 });
+    }
+
     await prisma.message.delete({ where: { id: messageId } });
 
+    // Publish delete event
     const ably = getAblyServer();
     const channel = ably.channels.get(`conversation:${message.conversationId}`);
-    await channel.publish('message-deleted', { id: messageId, conversationId: message.conversationId });
+    await channel.publish('message-deleted', {
+      id: messageId,
+      conversationId: message.conversationId,
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -63,15 +75,30 @@ export async function PUT(
       return NextResponse.json({ error: 'Not allowed' }, { status: 403 });
     }
 
+    // Verify user still has access to conversation
+    const userConv = await prisma.userConversation.findFirst({
+      where: { userId: session.user.id, conversationId: message.conversationId },
+    });
+    if (!userConv) {
+      return NextResponse.json({ error: 'Conversation not found' }, { status: 404 });
+    }
+
     const updated = await prisma.message.update({
       where: { id: messageId },
       data: { content, edited: true, editedAt: new Date() },
       include: {
         sender: { select: { id: true, name: true, image: true } },
-        repliedTo: { select: { id: true, content: true, sender: { select: { name: true } } } },
+        repliedTo: {
+          select: {
+            id: true,
+            content: true,
+            sender: { select: { name: true } },
+          },
+        },
       },
     });
 
+    // Publish edit event
     const ably = getAblyServer();
     const channel = ably.channels.get(`conversation:${message.conversationId}`);
     await channel.publish('message-edited', updated);

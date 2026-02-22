@@ -19,6 +19,12 @@ export default function ChatRoom() {
    const [messageInput, setMessageInput] = useState('')
 
    // Fetch initial messages
+   // Inside ChatRoom component, add:
+useEffect(() => {
+  if (!conversationId) return;
+  // Mark conversation as read when entering
+  fetch(`/api/conversations/${conversationId}/read`, { method: 'POST' }).catch(console.error);
+}, [conversationId]);
    useEffect(() => {
       if (!conversationId) return
 

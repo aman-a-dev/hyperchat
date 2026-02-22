@@ -1,6 +1,7 @@
-"use client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+'use client';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   Item,
   ItemActions,
@@ -8,7 +9,7 @@ import {
   ItemDescription,
   ItemMedia,
   ItemTitle,
-} from "@/components/ui/item";
+} from '@/components/ui/item';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,7 +17,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import {
   EllipsisVertical,
   Pin,
@@ -25,10 +26,10 @@ import {
   ShieldX,
   MessageCircle,
   Check,
-} from "lucide-react";
-import Link from "next/link";
-import { motion } from "motion/react";
-import { cn } from "@/lib/utils"; // Assuming you have a utility for classnames, or just use template literals
+} from 'lucide-react';
+import Link from 'next/link';
+import { motion } from 'motion/react';
+import { cn } from '@/lib/utils';
 
 interface UserItemProps {
   link?: string;
@@ -36,8 +37,9 @@ interface UserItemProps {
   name?: string;
   email?: string;
   online?: boolean;
-  id: string | number; // Required for selection
+  id: string | number;
   lastMsg: string;
+  unreadCount?: number;
 
   // Selection Props
   isSelecting?: boolean;
@@ -46,13 +48,14 @@ interface UserItemProps {
 }
 
 export default function UserItem({
-  link = "/chat",
-  avatar = "/avatar.png",
-  name = "jone doe",
-  email = "jonedoe@gmail.com",
+  link = '/chat',
+  avatar = '/avatar.png',
+  name = 'jone doe',
+  email = 'jonedoe@gmail.com',
   online,
   id,
   lastMsg,
+  unreadCount = 0,
   isSelecting = false,
   isSelected = false,
   onSelect,
@@ -68,17 +71,17 @@ export default function UserItem({
       initial={{ y: 50, opacity: 0 }}
       whileInView={{ y: 0, opacity: 1 }}
       viewport={{ once: false }}
-      transition={{ duration: 0.5, type: "spring" }} // Reduced duration slightly for snappier feel
+      transition={{ duration: 0.5, type: 'spring' }}
       className="mb-1 bg-card/50 backdrop-blur-md"
     >
       <Item
         variant="outline"
         className={cn(
-          "flex items-center justify-between gap-2 cursor-pointer transition-all duration-200",
+          'flex items-center justify-between gap-2 cursor-pointer transition-all duration-200',
           {
-            "bg-secondary/50 border-secondary": isSelected,
-            "hover:bg-secondary/30": !isSelecting,
-          },
+            'bg-secondary/50 border-secondary': isSelected,
+            'hover:bg-secondary/30': !isSelecting,
+          }
         )}
         onClick={handleItemClick}
       >
@@ -87,8 +90,8 @@ export default function UserItem({
           {isSelecting && (
             <div
               className={cn(
-                "flex h-5 w-5 border-muted-foreground  items-center justify-center rounded-full border transition-colors",
-                isSelected ? "bg-brand dark:text-white" : "text-transparent",
+                'flex h-5 w-5 border-muted-foreground items-center justify-center rounded-full border transition-colors',
+                isSelected ? 'bg-brand dark:text-white' : 'text-transparent'
               )}
             >
               <Check size={13} strokeWidth={3} />
@@ -96,7 +99,7 @@ export default function UserItem({
           )}
 
           <Link
-            href={isSelecting ? "#" : link} // Prevent navigation if selecting
+            href={isSelecting ? '#' : link}
             className="flex flex-1 items-center gap-3 overflow-hidden"
             onClick={(e) => isSelecting && e.preventDefault()}
           >
@@ -120,7 +123,14 @@ export default function UserItem({
               </div>
             </ItemMedia>
             <ItemContent>
-              <ItemTitle>{name}</ItemTitle>
+              <div className="flex items-center gap-2">
+                <ItemTitle>{name}</ItemTitle>
+                {unreadCount > 0 && (
+                  <Badge variant="default" className="text-xs">
+                    {unreadCount}
+                  </Badge>
+                )}
+              </div>
               <ItemDescription className="truncate text-sm">
                 {email}
               </ItemDescription>
@@ -130,6 +140,7 @@ export default function UserItem({
             </ItemContent>
           </Link>
         </div>
+
         {/* Right Side: Dropdown Menu (Only if NOT selecting) */}
         {!isSelecting && (
           <DropdownMenu>
