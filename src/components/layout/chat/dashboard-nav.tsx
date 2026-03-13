@@ -2,16 +2,15 @@
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { usePathname } from "next/navigation";
-import ChatSearchBar from "@/components/ui/action-search-bar.tsx";
+import ChatSearchBar from "@/components/ui/action-search-bar";
 import { useState, useCallback, type ChangeEvent } from "react";
 export default function DashboardNav() {
   const pathname = usePathname();
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState("");
   const handleSearchOpen = () => {
     console.log("Search bar opened!");
     // You can do something like log event, focus, or open a sidebar
   };
-  
 
   return (
     <>

@@ -1,4 +1,4 @@
-// auth
+// src/lib/auth.ts
 import { betterAuth } from 'better-auth'
 // orm
 import { prismaAdapter } from 'better-auth/adapters/prisma'
@@ -7,6 +7,7 @@ import { prisma } from './prisma'
 import { customSession } from 'better-auth/plugins'
 // email
 import { Resend } from 'resend'
+
 const resend = new Resend(process.env.RESEND_API_KEY)
 const from = process.env.BETTER_AUTH_EMAIL || 'delivered@resend.dev'
 const to = process.env.TEST_EMAIL || ''
@@ -28,7 +29,7 @@ export const auth = betterAuth({
       //sendOnSignUp: true,
       async sendResetPassword({ user, url }) {
          await resend.emails.send({
-            from,
+            from: from,
             to: user.email,
             subject: 'Reset your password',
             html: `<a href=${url}>Reset your password</a>`
@@ -46,32 +47,13 @@ export const auth = betterAuth({
    },
    user: {
       deleteUser: {
-         enabled: true
-      },
-      changeEmail: {
-         enabled: true
-      },
-      changeEmail: {
-         enabled: true,
-         sendChangeEmailConfirmation: async (
-            { user, newEmail, url, token },
-            request
-         ) => {
-            await resend.emails.send({
-               to: user.email,
-               subject: 'Approve email change',
-               text: `Click the link to approve the change to ${newEmail}: ${url}`
-            })
-         }
-      },
-      deleteUser: {
          enabled: true,
          sendDeleteAccountVerification: async (
             { user, url, token },
             request
          ) => {
-            const { error } = await resend.emails.send({
-               from,
+            await resend.emails.send({
+               from: from,
                to: user.email,
                subject: 'Delete Hyperchat account',
                html: `
@@ -85,6 +67,20 @@ export const auth = betterAuth({
         `
             })
          }
+      },
+      changeEmail: {
+         enabled: true,
+         sendChangeEmailConfirmation: async (
+            { user, newEmail, url, token },
+            request
+         ) => {
+            await resend.emails.send({
+               from,
+               to: user.email,
+               subject: "Approve email change",
+               text: `Click the link to approve the change to ${newEmail}: ${url}`,
+            });
+         },
       },
       additionalFields: {
          bio: {
@@ -105,8 +101,8 @@ export const auth = betterAuth({
       },
       emailVerification: {
          sendVerificationEmail: async ({ user, url }) => {
-            const { error } = await resend.emails.send({
-               from,
+            await resend.emails.send({
+               from: from,
                to: user.email,
                subject: 'Verify your email address',
                html: `
@@ -119,10 +115,6 @@ export const auth = betterAuth({
         </div>
         `
             })
-
-            if (error) {
-               console.error('‼️ Failed to send verification email:', error)
-            }
          }
       }
    },
@@ -131,9 +123,9 @@ export const auth = betterAuth({
          return {
             user: {
                ...user,
-               bio: user.bio,
-               job: user.job,
-               country: user.country,
+               bio: (user as any).bio,
+               job: (user as any).job,
+               country: (user as any).country
             },
             session
          }
@@ -141,21 +133,19 @@ export const auth = betterAuth({
    ]
 })
 
-
-import { headers } from 'next/headers';
-import type { NextRequest } from 'next/server';
-
+import { headers } from 'next/headers'
+import type { NextRequest } from 'next/server'
 
 export async function getSession(req?: NextRequest) {
-  try {
-    // If we have a request object (in API routes), use its headers
-    const headersList = req ? req.headers : await headers();
-    const session = await auth.api.getSession({
-      headers: headersList,
-    });
-    return session;
-  } catch (error) {
-    console.error('Failed to get session:', error);
-    return null;
-  }
+   try {
+      // If we have a request object (in API routes), use its headers
+      const headersList = req ? req.headers : await headers()
+      const session = await auth.api.getSession({
+         headers: headersList
+      })
+      return session
+   } catch (error: any) {
+      console.error('Failed to get session:', error)
+      return null
+   }
 }

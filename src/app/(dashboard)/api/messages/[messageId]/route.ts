@@ -1,16 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getSession } from '@/lib/auth';
-import { getAblyServer } from '@/lib/ably';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
+import { getAblyServer } from "@/lib/ably";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ messageId: string }> }
+  { params }: { params: Promise<{ messageId: string }> },
 ) {
   try {
     const session = await getSession(req);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { messageId } = await params;
@@ -21,15 +21,21 @@ export async function DELETE(
     });
 
     if (!message || message.senderId !== session.user.id) {
-      return NextResponse.json({ error: 'Not allowed' }, { status: 403 });
+      return NextResponse.json({ error: "Not allowed" }, { status: 403 });
     }
 
     // Optionally verify user still has access to conversation (though not strictly needed for delete)
     const userConv = await prisma.userConversation.findFirst({
-      where: { userId: session.user.id, conversationId: message.conversationId },
+      where: {
+        userId: session.user.id,
+        conversationId: message.conversationId,
+      },
     });
     if (!userConv) {
-      return NextResponse.json({ error: 'Conversation not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Conversation not found" },
+        { status: 404 },
+      );
     }
 
     await prisma.message.delete({ where: { id: messageId } });
@@ -37,33 +43,39 @@ export async function DELETE(
     // Publish delete event
     const ably = getAblyServer();
     const channel = ably.channels.get(`conversation:${message.conversationId}`);
-    await channel.publish('message-deleted', {
+    await channel.publish("message-deleted", {
       id: messageId,
       conversationId: message.conversationId,
     });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('DELETE message error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  } catch (error: any) {
+    console.error("DELETE message error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ messageId: string }> }
+  { params }: { params: Promise<{ messageId: string }> },
 ) {
   try {
     const session = await getSession(req);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { messageId } = await params;
     const { content } = await req.json();
 
     if (!content?.trim()) {
-      return NextResponse.json({ error: 'Content is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Content is required" },
+        { status: 400 },
+      );
     }
 
     const message = await prisma.message.findUnique({
@@ -72,15 +84,21 @@ export async function PUT(
     });
 
     if (!message || message.senderId !== session.user.id) {
-      return NextResponse.json({ error: 'Not allowed' }, { status: 403 });
+      return NextResponse.json({ error: "Not allowed" }, { status: 403 });
     }
 
     // Verify user still has access to conversation
     const userConv = await prisma.userConversation.findFirst({
-      where: { userId: session.user.id, conversationId: message.conversationId },
+      where: {
+        userId: session.user.id,
+        conversationId: message.conversationId,
+      },
     });
     if (!userConv) {
-      return NextResponse.json({ error: 'Conversation not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Conversation not found" },
+        { status: 404 },
+      );
     }
 
     const updated = await prisma.message.update({
@@ -101,11 +119,14 @@ export async function PUT(
     // Publish edit event
     const ably = getAblyServer();
     const channel = ably.channels.get(`conversation:${message.conversationId}`);
-    await channel.publish('message-edited', updated);
+    await channel.publish("message-edited", updated);
 
     return NextResponse.json(updated);
-  } catch (error) {
-    console.error('PUT message error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  } catch (error: any) {
+    console.error("PUT message error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { SmoothTab } from '@/components/ui/smooth-tab';
-import UserList from './user-list';
-import { getAblyClient } from '@/lib/ably';
-import { useSession } from '@/lib/auth-client';
+import { useState, useEffect, useCallback } from "react";
+import { SmoothTab } from "@/components/ui/smooth-tab";
+import UserList from "./user-list";
+import { getAblyClient } from "@/lib/ably";
+import { useSession } from "@/lib/auth-client";
 
 interface Conversation {
   id: string;
@@ -12,7 +12,7 @@ interface Conversation {
     id: string;
     name: string;
     email: string;
-    image: string | null;
+    image?: string | null;
   };
   lastMessage: {
     id: string;
@@ -27,17 +27,17 @@ export default function CategorizedChats() {
   const { data: session } = useSession();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState('all');
+  const [activeCategory, setActiveCategory] = useState("all");
 
   // Fetch conversations
   const fetchConversations = useCallback(async () => {
     try {
-      const res = await fetch('/api/conversations');
-      if (!res.ok) throw new Error('Failed to fetch');
+      const res = await fetch("/api/conversations");
+      if (!res.ok) throw new Error("Failed to fetch");
       const data = await res.json();
       setConversations(data);
-    } catch (error) {
-      console.error('Error fetching conversations:', error);
+    } catch (error: any) {
+      console.error("Error fetching conversations:", error);
     } finally {
       setLoading(false);
     }
@@ -86,21 +86,21 @@ export default function CategorizedChats() {
       const { conversationId } = msg.data;
       setConversations((prev) =>
         prev.map((c) =>
-          c.id === conversationId ? { ...c, unreadCount: 0 } : c
-        )
+          c.id === conversationId ? { ...c, unreadCount: 0 } : c,
+        ),
       );
     };
 
-    channel.subscribe('new-message', handleNewMessage);
-    channel.subscribe('conversation-read', handleConversationRead);
+    channel.subscribe("new-message", handleNewMessage);
+    channel.subscribe("conversation-read", handleConversationRead);
 
     return () => {
-      channel.unsubscribe('new-message', handleNewMessage);
-      channel.unsubscribe('conversation-read', handleConversationRead);
+      channel.unsubscribe("new-message", handleNewMessage);
+      channel.unsubscribe("conversation-read", handleConversationRead);
     };
   }, [session?.user?.id, fetchConversations]);
 
-  const categories = [{ id: 'all', title: 'All' }];
+  const categories = [{ id: "all", title: "All" }];
   const currentConversations = conversations;
 
   return (
@@ -111,12 +111,12 @@ export default function CategorizedChats() {
         <UserList
           users={currentConversations.map((c) => ({
             id: c.id,
-            name: c.otherUser?.name || 'Unknown',
-            email: c.otherUser?.email || '',
-            src: c.otherUser?.image || '/avatar.png',
+            name: c.otherUser?.name || "Unknown",
+            email: c.otherUser?.email || "",
+            src: c.otherUser?.image || "/avatar.png",
             online: false, // could be enhanced with presence
             link: `/chats/${c.id}`,
-            lastMsg: c.lastMessage?.content || 'No messages yet',
+            lastMsg: c.lastMessage?.content || "No messages yet",
             unreadCount: c.unreadCount,
           }))}
         />

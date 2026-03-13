@@ -65,7 +65,7 @@ export default function SignIn() {
           },
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Sign-in error:", error);
       toast.error("An error occurred", {
         description: "Please try again",
@@ -95,7 +95,7 @@ export default function SignIn() {
 
       // If successful, auth flow will handle the redirect
       // No need for manual redirect here
-    } catch (error) {
+    } catch (error: any) {
       console.error("Google sign-in error:", error);
       toast.error("Sign-in failed", {
         description: "Please try again",

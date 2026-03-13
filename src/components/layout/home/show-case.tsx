@@ -1,3 +1,4 @@
+// src/components/layout/home/show-case.tsx
 "use client";
 
 import { ReactLenis } from "lenis/react";
@@ -5,16 +6,17 @@ import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useRef } from "react";
 import Message from "@/components/layout/chat/message";
 import { Bitshow } from "@/components/font/font";
+import React from "react";
 
 const demoMessages = [
-  { msg: "Hi bro ☺️", sender: "other" },
-  { msg: "How are you my friend 👋", sender: "user" },
-  { msg: "Very well 👌", sender: "other" },
-  { msg: "Ok what's wrong", sender: "user" },
-  { msg: "Can I ask  you some thing", sender: "other" },
-  { msg: "Now 😩", sender: "user" },
-  { msg: "a detailed report about todays job 🚨", sender: "other" },
-] as const;
+  { id: 1, msg: "Hi bro ☺️", sender: "other" },
+  { id: 2, msg: "How are you my friend 👋", sender: "user" },
+  { id: 3, msg: "Very well 👌", sender: "other" },
+  { id: 4, msg: "Ok what's wrong", sender: "user" },
+  { id: 5, msg: "Can I ask  you some thing", sender: "other" },
+  { id: 6, msg: "Now 😩", sender: "user" },
+  { id: 7, msg: "a detailed report about todays job 🚨", sender: "other" },
+];
 
 export default function ShowCase() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -47,7 +49,7 @@ export default function ShowCase() {
     [0, 0, 0.6, 1],
     [1, 1.18, 0.72, 0.68],
   );
-  const aiTextGlow = useTransform(fingerClickProgress, (v) =>
+  const aiTextGlow = useTransform(fingerClickProgress, (v: number) =>
     v > 0.4 && v < 0.7 ? 1 : 0,
   );
 
@@ -56,8 +58,8 @@ export default function ShowCase() {
       root
       options={{
         duration: 1.65,
-        easing: (_t) => (t) => Math.min(1, 1.001 - 2 ** (-10 * t)),
-        smoothTouch: true,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        touchMultiplier: 2,
         lerp: 0.065,
       }}
     >
@@ -87,7 +89,7 @@ export default function ShowCase() {
 
               return (
                 <motion.div
-                  key={y}
+                  key={item.id}
                   style={{
                     y,
                     scale,
@@ -100,8 +102,9 @@ export default function ShowCase() {
                 >
                   <div className="mx-auto">
                     <Message
-                      sender={item.sender}
-                      url={"/"}
+                      id={String(item.id)} // Convert number to string
+                      sender={item.sender as "user" | "other"}
+                      url={"#"}
                       content={item.msg}
                       timestamp={new Date()}
                       demo={true}
@@ -193,7 +196,7 @@ export default function ShowCase() {
               <motion.span
                 style={{
                   scale: textReaction,
-                  textShadow: useTransform(aiTextGlow, (v) =>
+                  textShadow: useTransform(aiTextGlow, (v: number) =>
                     v
                       ? "0 0 60px var(--primary), 0 0 120px var(--primary)"
                       : "none",

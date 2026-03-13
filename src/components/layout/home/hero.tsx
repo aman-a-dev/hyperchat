@@ -98,7 +98,7 @@ export default function Hero() {
   );
 }
 
-function DotGridBg({ children }) {
+function DotGridBg({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen w-full relative">
       {/* Dashed Top Fade Grid */}

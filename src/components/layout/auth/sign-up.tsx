@@ -74,7 +74,7 @@ export default function Signup() {
           },
         );
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Signup error:", error);
       toast.error("An error occurred", {
         description: "Please try again",
@@ -84,27 +84,27 @@ export default function Signup() {
     }
   }
 
+  // src/components/layout/auth/sign-up.tsx (line 91)
   const handleGoogleSignUp = async () => {
     try {
       setGoogleLoading(true);
 
-      const { _, error } = await authClient.signIn.social({
+      const result = await authClient.signIn.social({
         provider: "google",
         callbackURL: "/chats",
         errorCallbackURL: "/error",
       });
 
-      if (error) {
-        console.error("Google sign-in error:", error);
+      if (result.error) {
+        console.error("Google sign-in error:", result.error);
         toast.error("Google sign-in failed", {
-          description: error.message || "Please try again",
+          description: result.error.message || "Please try again",
         });
         return;
       }
 
       // If successful, the user will be redirected by the auth provider
-      // No need to manually redirect here
-    } catch (error) {
+    } catch (error: any) {
       console.error("Google sign-in failed:", error);
       toast.error("Sign-in failed", {
         description: "Please try again",

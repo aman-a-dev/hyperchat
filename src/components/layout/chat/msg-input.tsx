@@ -1,7 +1,7 @@
 'use client'
 
 import type React from 'react'
-import { Button as button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import {
    DropdownMenu,
    DropdownMenuContent,
@@ -31,7 +31,7 @@ import { VoiceInput } from '@/components/ui/voice-input'
 interface MsgInputProps {
    message: string
    setMessage: (value: string) => void
-   onSend: () => void
+   onSend: (e: React.FormEvent) => void
 }
 
 export default function MsgInput({
@@ -63,9 +63,11 @@ export default function MsgInput({
          )
       }
    }
+
    const onStart = () => {
       setListening(true)
    }
+
    const onStop = () => {
       setListening(false)
    }
@@ -126,7 +128,7 @@ export default function MsgInput({
                         placeholder='Your Message___'
                         className='placeholder:whitespace-nowrap min-h-0 resize-none rounded-none border-0 p-0 text-base placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 scrollbar-thin dark:bg-transparent'
                         rows={1}
-                        disabled={listening ? true : undefined}
+                        disabled={listening}
                      />
                   </div>
                </div>
@@ -137,14 +139,14 @@ export default function MsgInput({
                >
                   <DropdownMenu>
                      <DropdownMenuTrigger asChild>
-                        <button
+                        <Button
                            type='button'
                            variant='ghost'
                            size='icon'
                            className='outline-none flex bg-card/50 backdrop-blur-lg cursor-pointer items-center justify-center rounded-full border p-2'
                         >
                            <Plus />
-                        </button>
+                        </Button>
                      </DropdownMenuTrigger>
 
                      <DropdownMenuContent
@@ -220,30 +222,29 @@ export default function MsgInput({
                   style={{ gridArea: isExpanded ? 'footer' : 'trailing' }}
                >
                   <div className='ms-auto flex items-center gap-1.5'>
-                     <button
-                        disabled={listening ? true : undefined}
+                     <Button
+                        disabled={listening}
                         type='button'
                         variant='ghost'
                         size='icon'
                         className='h-9 w-9 rounded-full hover:bg-accent relative'
                      >
                         <Brain className='size-5 text-muted-foreground' />
-                     </button>
-                     <button
-                        disabled={listening ? true : undefined}
+                     </Button>
+                     <Button
+                        disabled={listening}
                         type='button'
                         variant='ghost'
                         size='icon'
                         className='h-9 w-9 rounded-full hover:bg-accent relative'
                      >
                         <Edit className='size-5 text-muted-foreground' />
-                     </button>
+                     </Button>
 
-                     {/*<Mic className='size-5 text-muted-foreground' />*/}
                      <VoiceInput
                         onStop={onStop}
                         onStart={onStart}
-                        className={isExpanded && 'pr-1'}
+                        className={isExpanded ? 'pr-1' : ''}
                      />
 
                      {message.trim() && (
@@ -253,9 +254,8 @@ export default function MsgInput({
                            exit={{ rotate: -100, opacity: 0 }}
                            transition={{ type: 'spring' }}
                            type='submit'
-                           size='icon'
-                           onClick={()=> setIsExpanded(false)}
-                           className='h-9 w-9 rounded-full text-background bg-primary flex justify-center items-center shadow-xl shadow-primary/30  hover:shadow-xl'
+                           onClick={() => setIsExpanded(false)}
+                           className='h-9 w-9 rounded-full text-background bg-primary flex justify-center items-center shadow-xl shadow-primary/30 hover:shadow-xl'
                         >
                            <ArrowRight className='size-6' />
                         </motion.button>

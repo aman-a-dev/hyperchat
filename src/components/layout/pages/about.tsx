@@ -1,3 +1,4 @@
+// src/components/layout/pages/about.tsx
 "use client";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
@@ -14,6 +15,8 @@ import {
   CheckCircle,
   Brain,
 } from "lucide-react";
+import React from "react";
+
 interface StatItemProps {
   value?: number;
   label: string;
@@ -22,12 +25,13 @@ interface StatItemProps {
   decimalPlaces?: number;
   color?: string;
 }
+
 const StatItem = ({
-  _value,
+  value,
   label,
   icon,
   delay = 0,
-  _decimalPlaces = 0,
+  decimalPlaces = 0,
   color = "from-primary to-primary/70",
 }: StatItemProps) => {
   const ref = useRef(null);
@@ -64,7 +68,7 @@ const StatItem = ({
         </div>
         <div className="flex flex-col">
           <h3 className="flex items-baseline text-3xl font-bold tracking-tight">
-            <CountUp to={100} />
+            <CountUp to={value || 0} />
             <span className="ml-1 text-sm font-medium opacity-70">+</span>
           </h3>
           <p className="text-muted-foreground text-sm font-medium">{label}</p>
@@ -73,6 +77,7 @@ const StatItem = ({
     </motion.div>
   );
 };
+
 export default function About() {
   const aboutRef = useRef(null);
   const statsRef = useRef(null);
@@ -112,6 +117,7 @@ export default function About() {
       decimalPlaces: 0,
     },
   ];
+
   return (
     <section className="relative w-full overflow-hidden py-16 md:py-24">
       {/* Background pattern */}
@@ -175,7 +181,7 @@ export default function About() {
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {stats.map((stat, index) => (
               <StatItem
-                key={crypto.randomUUID()}
+                key={index}
                 value={stat.value}
                 label={stat.label}
                 icon={stat.icon}
@@ -186,77 +192,7 @@ export default function About() {
             ))}
           </div>
         </div>
-        {/* About Content Section */}
-        {/*  <div
-               ref={aboutRef}
-               className='relative mx-auto mb-20'
-            >
-               <div className='grid gap-16 md:grid-cols-2'>
-                  <motion.div
-                     initial={{ opacity: 0, y: 30 }}
-                     animate={
-                        aboutInView
-                           ? { opacity: 1, y: 0 }
-                           : { opacity: 0, y: 30 }
-                     }
-                     transition={{ duration: 0.7, delay: 0.1, ease: 'easeOut' }}
-                     className='relative space-y-6'
-                  >
-                     <div className='from-primary/80 to-primary/60 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-lg'>
-                        <Zap className='h-6 w-6' />
-                     </div>
-                     <h2 className='text-2xl font-bold tracking-tight'>
-                        Our Mission
-                     </h2>
-                     <p className='text-muted-foreground text-base leading-relaxed'>
-                        To empower businesses with innovative digital solutions
-                        that drive growth, enhance user experiences, and create
-                        lasting value in an ever-evolving technological
-                        landscape.
-                     </p>
-                  </motion.div>
-                  <motion.div
-                     initial={{ opacity: 0, y: 30 }}
-                     animate={
-                        aboutInView
-                           ? { opacity: 1, y: 0 }
-                           : { opacity: 0, y: 30 }
-                     }
-                     transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
-                     className='relative space-y-6'
-                  >
-                     <div className='inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500/80 to-amber-500/60 text-white shadow-lg'>
-                        <LineChart className='h-6 w-6' />
-                     </div>
-                     <h2 className='text-2xl font-bold tracking-tight'>
-                        Our Vision
-                     </h2>
-                     <p className='text-muted-foreground text-base leading-relaxed'>
-                        To be the leading provider of transformative digital
-                        experiences, recognized globally for our commitment to
-                        excellence, innovation, and client success.
-                     </p>
-                  </motion.div>
-               </div>
-               <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={
-                     aboutInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }
-                  }
-                  transition={{ duration: 0.7, delay: 0.5, ease: 'easeOut' }}
-                  className='mt-16 flex items-start gap-4'
-               >
-                  <div className='from-primary/20 to-primary/5 text-primary inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br'>
-                     <Building className='h-5 w-5' />
-                  </div>
-                  <p className='text-muted-foreground text-base leading-relaxed'>
-                     We are a passionate team of experts dedicated to delivering
-                     exceptional solutions that help businesses thrive in the
-                     digital landscape. Our commitment to innovation and quality
-                     has made us a trusted partner for organizations worldwide.
-                  </p>
-               </motion.div>
-            </div>*/}
+        {/* About Content Section - commented out */}
       </div>
     </section>
   );

@@ -1,0 +1,9 @@
+
+> hyper-chat@0.1.0 lint
+> biome check
+
+The number of diagnostics exceeds the limit allowed. Use --max-diagnostics to increase it.
+Diagnostics not shown: 75.
+Checked 94 files in 1881ms. No fixes applied.
+Found 15 errors.
+Found 76 warnings.

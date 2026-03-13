@@ -8,7 +8,7 @@ import { Logo } from "@/components/icon/icons";
 import { ThemeToggleButton } from "@/components/shared/theme-toggler-button";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "next-themes";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Bitshow } from "@/components/font/font";
 import { authClient } from "@/lib/auth-client";
@@ -25,13 +25,14 @@ import {
 interface NavItem {
   name: string;
   href: string;
+  icon: LucideIcon;
 }
 
 const navItems: NavItem[] = [
-  { name: "Home", href: "/", icon: <Home /> },
-  { name: "Contact", href: "/contact", icon: <Phone /> },
-  { name: "About", href: "/about", icon: <Banknote /> },
-  { name: "Features", href: "/features", icon: <Info /> },
+  { name: "Home", href: "/", icon: Home },
+  { name: "Contact", href: "/contact", icon: Phone },
+  { name: "About", href: "/about", icon: Banknote },
+  { name: "Features", href: "/features", icon: Info },
 ];
 
 export default function Nav() {
@@ -186,12 +187,13 @@ export default function Nav() {
                 start="center"
                 className="hidden"
               />
+              // src/components/layout/home/nav.tsx (around line 193)
               {session ? (
-                <DropdownMenu asChild>
-                  <DropdownMenuTrigger>
-                    <Avatar className="w-14 h-14">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="w-14 h-14 cursor-pointer">
                       <AvatarImage
-                        src={session.user.image}
+                        src={session.user.image || "/avatar.png"}
                         alt={session.user.name}
                       />
                       <AvatarFallback>
@@ -199,32 +201,29 @@ export default function Nav() {
                       </AvatarFallback>
                     </Avatar>
                   </DropdownMenuTrigger>
-                  <Link href="/profile">
-                    <DropdownMenuContent>
-                      <DropdownMenuLabel>My account</DropdownMenuLabel>
-                      <DropdownMenuItem>{session.user.name}</DropdownMenuItem>
-                      <DropdownMenuSeparator />
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>My account</DropdownMenuLabel>
+                    <DropdownMenuItem>{session.user.name}</DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
                       <Link
                         href="/profile"
-                        className="pt-1 flex justify-between items-center"
+                        className="flex justify-between items-center w-full"
                       >
-                        <DropdownMenuItem>
-                          {session.user.email}
-                        </DropdownMenuItem>
+                        {session.user.email}
                       </Link>
-                      <DropdownMenuItem>
-                        <Link href="/">
-                          <Button
-                            onClick={() => authClient.signOut()}
-                            type="button"
-                            clasw-ful="w-full"
-                          >
-                            Sign Out
-                          </Button>
-                        </Link>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Button
+                        onClick={() => authClient.signOut()}
+                        type="button"
+                        className="w-full"
+                        variant="default"
+                      >
+                        Sign Out
+                      </Button>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
                 <motion.div
@@ -287,7 +286,7 @@ export default function Nav() {
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
                         <span>{item.name}</span>
-                        {item.icon}
+                        <item.icon />
                       </Link>
                     </motion.div>
                   ))}
@@ -323,7 +322,7 @@ export default function Nav() {
                         </div>
                         <Avatar className="w-14 h-14">
                           <AvatarImage
-                            src={session.user.image}
+                            src={session.user.image || "/avatar.png"}
                             alt={session.user.name}
                           />
                           <AvatarFallback className="text-2xl">

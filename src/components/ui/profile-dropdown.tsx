@@ -17,7 +17,7 @@ import { authClient } from '@/lib/auth-client'
 interface Profile {
    name: string
    email: string
-   image: string
+   image?: string | null
    //subscription?: string
 }
 

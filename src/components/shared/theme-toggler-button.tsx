@@ -593,20 +593,22 @@ export const useThemeToggle = ({
 
 // ///////////////////////////////////////////////////////////////////////////
 
-export const ThemeToggleButton = ({
-  className = "",
-  variant = "circle",
-  start = "center",
-  blur = false,
-  gifUrl = "",
-  ref,
-}: {
+// src/components/shared/theme-toggler-button.tsx
+// At the bottom of the file, replace the ThemeToggleButton component with:
+
+export const ThemeToggleButton = React.forwardRef<HTMLButtonElement, {
   className?: string;
   variant?: AnimationVariant;
   start?: AnimationStart;
   blur?: boolean;
   gifUrl?: string;
-}) => {
+}>(({
+  className = "",
+  variant = "circle",
+  start = "center",
+  blur = false,
+  gifUrl = "",
+}, ref) => {
   const { isDark, toggleTheme } = useThemeToggle({
     variant,
     start,
@@ -650,7 +652,9 @@ export const ThemeToggleButton = ({
       </svg>
     </button>
   );
-};
+});
+
+ThemeToggleButton.displayName = "ThemeToggleButton";
 
 // ///////////////////////////////////////////////////////////////////////////
 

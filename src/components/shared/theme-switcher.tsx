@@ -1,11 +1,12 @@
+// src/components/shared/theme-switcher.tsx
 'use client'
 
 import { MonitorIcon, MoonStarIcon, SunIcon } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useTheme } from 'next-themes'
 import type { JSX } from 'react'
-import { useSyncExternalStore, useRef, useState } from 'react'
-import { ThemeToggleButton } from '@/components/shared/theme-toggler-button'
+import { useSyncExternalStore, useRef, useState, forwardRef } from 'react'
+import { ThemeToggleButton, type AnimationVariant } from '@/components/shared/theme-toggler-button'
 import { cn } from '@/lib/utils'
 
 function ThemeOption({
@@ -62,7 +63,7 @@ const THEME_OPTIONS = [
 
 function ThemeSwitcher() {
    const { theme, setTheme } = useTheme()
-   const [variant, setVariant] = useState(
+   const [variant, setVariant] = useState<AnimationVariant>(
       randomVariant())
    const toggleButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -110,7 +111,7 @@ function ThemeSwitcher() {
          {/* Hidden ThemeToggleButton that actually controls the theme */}
          <ThemeToggleButton
             ref={toggleButtonRef}
-            className='hidden' // Screen reader only - completely hidden visually
+            className='hidden'
             aria-hidden='true'
             variant={variant}
          />
@@ -120,7 +121,7 @@ function ThemeSwitcher() {
 
 export { ThemeSwitcher }
 
-function randomVariant() {
+function randomVariant(): AnimationVariant {
    const randomNum = Math.floor(Math.random() * 4) + 1
    if (randomNum === 1) {
       return 'circle-blur'
@@ -134,4 +135,5 @@ function randomVariant() {
    if (randomNum === 4) {
       return 'circle'
    }
+   return 'circle' // Default fallback
 }

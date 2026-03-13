@@ -1,3 +1,4 @@
+// src/components/layout/settings/settings.tsx
 import Link from "next/link";
 import {
   ChevronRightIcon,
@@ -48,12 +49,13 @@ export default function Settings() {
     </div>
   );
 }
-type settingsListType = {
-  icon: LucideIcon;
+
+interface settingsListType {
+  icon: React.ReactNode;
   title: string;
   description: string;
   href: string;
-};
+}
 
 const settingsList: settingsListType[] = [
   {

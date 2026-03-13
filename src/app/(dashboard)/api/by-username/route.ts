@@ -1,13 +1,16 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const username = searchParams.get('username')?.trim();
+    const username = searchParams.get("username")?.trim();
 
     if (!username) {
-      return NextResponse.json({ error: 'Username is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Username is required" },
+        { status: 400 },
+      );
     }
 
     // Find user where email starts with username + '@' (case‑insensitive).
@@ -15,7 +18,7 @@ export async function GET(req: NextRequest) {
     const user = await prisma.user.findFirst({
       where: {
         email: {
-          startsWith: username + '@',
+          startsWith: username + "@",
         },
       },
       include: {
@@ -24,7 +27,7 @@ export async function GET(req: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Default all fields to visible if no settings record exists
@@ -45,8 +48,11 @@ export async function GET(req: NextRequest) {
     };
 
     return NextResponse.json(profile);
-  } catch (error) {
-    console.error('Error fetching user by username:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  } catch (error: any) {
+    console.error("Error fetching user by username:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

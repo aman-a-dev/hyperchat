@@ -11,6 +11,9 @@ export function ThemeProvider({
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
 }
 
-export function SidebarProvider({ children, ...props }: React.ComponentProps) {
+export function SidebarProvider({
+  children,
+  ...props
+}: React.ComponentProps<typeof SidebarProviders>) {
   return <SidebarProviders {...props}>{children}</SidebarProviders>;
 }

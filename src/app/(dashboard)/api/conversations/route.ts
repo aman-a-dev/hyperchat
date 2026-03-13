@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { getSession } from '@/lib/auth';
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   try {
     const session = await getSession(req);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const userId = session.user.id;
@@ -19,22 +19,26 @@ export async function GET(req: NextRequest) {
       include: {
         userConversations: {
           include: {
-            user: { select: { id: true, name: true, email: true, image: true } },
+            user: {
+              select: { id: true, name: true, email: true, image: true },
+            },
           },
         },
         messages: {
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: "desc" },
           take: 1,
           select: { id: true, content: true, createdAt: true, senderId: true },
         },
       },
-      orderBy: { updatedAt: 'desc' },
+      orderBy: { updatedAt: "desc" },
     });
 
     // Enrich each conversation with unread count and the other participant
     const enriched = await Promise.all(
       conversations.map(async (conv) => {
-        const otherUser = conv.userConversations.find((uc) => uc.userId !== userId)?.user;
+        const otherUser = conv.userConversations.find(
+          (uc) => uc.userId !== userId,
+        )?.user;
         const myUc = conv.userConversations.find((uc) => uc.userId === userId);
         const lastReadAt = myUc?.lastReadAt;
         const lastMessage = conv.messages[0] || null;
@@ -79,20 +83,25 @@ export async function GET(req: NextRequest) {
           unreadCount,
           updatedAt: conv.updatedAt,
         };
-      })
+      }),
     );
 
     // Sort by last message time (desc), fallback to conversation updatedAt
     enriched.sort((a, b) => {
-      const timeA = a.lastMessage?.createdAt?.getTime() || a.updatedAt.getTime();
-      const timeB = b.lastMessage?.createdAt?.getTime() || b.updatedAt.getTime();
+      const timeA =
+        a.lastMessage?.createdAt?.getTime() || a.updatedAt.getTime();
+      const timeB =
+        b.lastMessage?.createdAt?.getTime() || b.updatedAt.getTime();
       return timeB - timeA;
     });
 
     return NextResponse.json(enriched);
-  } catch (error) {
-    console.error('Error fetching conversations:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  } catch (error: any) {
+    console.error("Error fetching conversations:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }
 
@@ -100,18 +109,18 @@ export async function POST(req: NextRequest) {
   try {
     const session = await getSession(req);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { userId: otherUserId } = await req.json();
     if (!otherUserId) {
-      return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
+      return NextResponse.json({ error: "Missing userId" }, { status: 400 });
     }
 
     if (otherUserId === session.user.id) {
       return NextResponse.json(
-        { error: 'Cannot start conversation with yourself' },
-        { status: 400 }
+        { error: "Cannot start conversation with yourself" },
+        { status: 400 },
       );
     }
 
@@ -142,8 +151,16 @@ export async function POST(req: NextRequest) {
 
       await tx.userConversation.createMany({
         data: [
-          { userId: session.user.id, conversationId: newConversation.id, lastReadAt: new Date() },
-          { userId: otherUserId, conversationId: newConversation.id, lastReadAt: new Date() },
+          {
+            userId: session.user.id,
+            conversationId: newConversation.id,
+            lastReadAt: new Date(),
+          },
+          {
+            userId: otherUserId,
+            conversationId: newConversation.id,
+            lastReadAt: new Date(),
+          },
         ],
       });
 
@@ -151,8 +168,11 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ conversationId: result.id });
-  } catch (error) {
-    console.error('Error creating conversation:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  } catch (error: any) {
+    console.error("Error creating conversation:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

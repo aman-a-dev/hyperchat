@@ -9,7 +9,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 //import { Switch } from "@/components/ui/switch";
-import { ThemeSwitcher } from "@/components/shared/teme-switcher";
+import { ThemeSwitcher } from "@/components/shared/theme-switcher";
 //import { Button } from "@/components/ui/button";
 import { SunMoon } from "lucide-react";
 

@@ -1,0 +1,2 @@
+src/components/layout/pages/about.tsx(73,22): error TS2322: Type '{ to: number; decimals: number; }' is not assignable to type 'IntrinsicAttributes & CountUpProps'.
+  Property 'decimals' does not exist on type 'IntrinsicAttributes & CountUpProps'.

@@ -1,3 +1,4 @@
+// src/components/layout/chat/chat-room-nav.tsx
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,16 +18,23 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+interface ChatRoomNavProps {
+  link?: string;
+  avatar?: string;
+  name?: string;
+  email?: string;
+}
+
 export default function ChatRoomNav({
   link = "/",
   avatar,
   name = "Amanuel Anteneh",
   email = "amanarttik@gmail.com",
-}) {
+}: ChatRoomNavProps) {
   return (
-    <header className="flex items-center fixed top-0 left-0 right-0 w-full z-10 bg-background/50 backdrop-blur p-1 rounded-md shadow-md w-full px-2 border-b">
+    <header className="flex items-center fixed top-0 left-0 right-0 w-full z-10 bg-background/50 backdrop-blur p-1 rounded-md shadow-md px-2 border-b">
       <Link href="/chats">
-        <Button variant="ghost">
+        <Button variant="ghost" size="icon">
           <ArrowLeft />
         </Button>
       </Link>
@@ -46,27 +54,27 @@ export default function ChatRoomNav({
       </Link>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost">
+          <Button variant="ghost" size="icon">
             <EllipsisVertical />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-40">
           <Link href={link}>
-            <DropdownMenuItem className="flex justify-between items-center ">
+            <DropdownMenuItem className="flex justify-between items-center cursor-pointer">
               <span>View Profile</span>
               <User className="size-4" />
             </DropdownMenuItem>
           </Link>
-          <DropdownMenuItem className="flex justify-between items-center">
+          <DropdownMenuItem className="flex justify-between items-center cursor-pointer">
             <span>Clear History</span>
             <BrushCleaning className="size-4" />
           </DropdownMenuItem>
-          <DropdownMenuItem className="flex justify-between items-center">
+          <DropdownMenuItem className="flex justify-between items-center cursor-pointer">
             <span>Incognito Chat</span>
             <Key className="size-4" />
           </DropdownMenuItem>
           <DropdownMenuSeparator className="bg-gradient-to-r from-transparent via-zinc-200 to-transparent dark:via-zinc-800" />
-          <DropdownMenuItem className="flex justify-between items-center text-primary">
+          <DropdownMenuItem className="flex justify-between items-center text-primary cursor-pointer">
             <span>Block</span>
             <ShieldX className="size-4" />
           </DropdownMenuItem>

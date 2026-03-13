@@ -1,0 +1,10 @@
+src/components/layout/chat/chat-room.tsx(195,23): error TS2322: Type '{ conversationId: string; }' is not assignable to type 'IntrinsicAttributes & { link?: string; avatar: any; name?: string; email?: string; }'.
+  Property 'conversationId' does not exist on type 'IntrinsicAttributes & { link?: string; avatar: any; name?: string; email?: string; }'.
+src/components/layout/chat/chat-room.tsx(221,46): error TS2339: Property 'email' does not exist on type '{ id: string; name: string; image: string; }'.
+src/components/layout/home/show-case.tsx(61,13): error TS2353: Object literal may only specify known properties, and 'smoothTouch' does not exist in type 'LenisOptions'.
+src/components/layout/home/show-case.tsx(111,32): error TS2741: Property 'id' is missing in type '{ sender: "user" | "other"; url: string; content: "Hi bro ☺️" | "How are you my friend 👋" | "Very well 👌" | "Ok what's wrong" | "Can I ask  you some thing" | "Now 😩" | "a detailed report about todays job 🚨"; timestamp: Date; demo: true; }' but required in type 'MessageProps'.
+src/components/layout/pages/about.tsx(70,38): error TS2322: Type '{ to: number; decimals: number; }' is not assignable to type 'IntrinsicAttributes & CountUpProps'.
+  Property 'decimals' does not exist on type 'IntrinsicAttributes & CountUpProps'.
+src/components/shared/theme-switcher.tsx(113,13): error TS2322: Type '{ ref: RefObject<HTMLButtonElement>; className: string; "aria-hidden": string; variant: AnimationVariant; }' is not assignable to type 'IntrinsicAttributes & { className?: string; variant?: AnimationVariant; start?: AnimationStart; blur?: boolean; gifUrl?: string; }'.
+  Property 'ref' does not exist on type 'IntrinsicAttributes & { className?: string; variant?: AnimationVariant; start?: AnimationStart; blur?: boolean; gifUrl?: string; }'.
+src/components/shared/theme-toggler-button.tsx(602,3): error TS2339: Property 'ref' does not exist on type '{ className?: string; variant?: AnimationVariant; start?: AnimationStart; blur?: boolean; gifUrl?: string; }'.

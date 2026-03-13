@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState, useCallback } from 'react';
-import UserItem from './user-item';
+import { useState, useCallback } from "react";
+import UserItem from "./user-item";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import {
   MoreVertical,
   Share2,
@@ -17,11 +17,11 @@ import {
   List,
   Folders,
   Search,
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { toast } from 'sonner';
-import Link from 'next/link';
-import { Logo } from '@/components/icon/icons';
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { toast } from "sonner";
+import Link from "next/link";
+import { Logo } from "@/components/icon/icons";
 import {
   Empty,
   EmptyContent,
@@ -29,7 +29,7 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from '@/components/ui/empty';
+} from "@/components/ui/empty";
 
 interface User {
   id: string;
@@ -43,7 +43,7 @@ interface User {
 }
 
 interface UserListProps {
-  users: User[];
+  users?: User[];
 }
 
 function UserList({ users }: UserListProps) {
@@ -71,7 +71,7 @@ function UserList({ users }: UserListProps) {
 
   const handleDelete = useCallback(() => {
     if (selectedUserIds.length === 0) return;
-    console.log('Deleting users:', selectedUserIds);
+    console.log("Deleting users:", selectedUserIds);
     toast.success(`Deleted ${selectedUserIds.length} users`);
     setIsSelecting(false);
     setSelectedUserIds([]);
@@ -79,7 +79,7 @@ function UserList({ users }: UserListProps) {
 
   const handleShare = useCallback(() => {
     if (selectedUserIds.length === 0) return;
-    console.log('Sharing users:', selectedUserIds);
+    console.log("Sharing users:", selectedUserIds);
     toast.success(`Shared ${selectedUserIds.length} users`);
     setIsSelecting(false);
     setSelectedUserIds([]);
@@ -88,6 +88,7 @@ function UserList({ users }: UserListProps) {
   return (
     <div className="relative flex w-full flex-col justify-between h-full">
       {/* Header with Selection Trigger */}
+
       <QuickDropDown
         toggleSelectionMode={toggleSelectionMode}
         isSelecting={isSelecting}
@@ -131,7 +132,6 @@ function UserList({ users }: UserListProps) {
           ))
         )}
       </div>
-
       {/* Bottom Action Bar */}
       <AnimatePresence>
         {isSelecting && (
@@ -187,7 +187,7 @@ function QuickDropDown({ isSelecting, toggleSelectionMode }: any) {
       <DropdownMenuTrigger
         asChild
         className={`${
-          isSelecting && 'hidden'
+          isSelecting && "hidden"
         } fixed top-2 right-14 z-10 p-3 flex justify-center items-center`}
       >
         <Button variant="ghost" size="icon">
@@ -200,7 +200,7 @@ function QuickDropDown({ isSelecting, toggleSelectionMode }: any) {
           onClick={toggleSelectionMode}
           className="flex justify-between items-center"
         >
-          <span>{isSelecting ? 'Cancel Selection' : 'Select Users'}</span>
+          <span>{isSelecting ? "Cancel Selection" : "Select Users"}</span>
           <List />
         </DropdownMenuItem>
         <Link href="/settings/category">
