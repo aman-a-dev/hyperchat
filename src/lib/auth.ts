@@ -77,10 +77,10 @@ export const auth = betterAuth({
             await resend.emails.send({
                from,
                to: user.email,
-               subject: "Approve email change",
-               text: `Click the link to approve the change to ${newEmail}: ${url}`,
-            });
-         },
+               subject: 'Approve email change',
+               text: `Click the link to approve the change to ${newEmail}: ${url}`
+            })
+         }
       },
       additionalFields: {
          bio: {
@@ -130,7 +130,8 @@ export const auth = betterAuth({
             session
          }
       })
-   ]
+   ],
+   trustedOrigins: ['http://localhost:3000','https://hyperchatai.vercel.app/']
 })
 
 import { headers } from 'next/headers'
