@@ -1,75 +1,48 @@
-src/actions/user.ts(29,19): error TS2339: Property 'error' does not exist on type '{ status: boolean; }'.
-src/actions/user.ts(32,27): error TS2339: Property 'error' does not exist on type '{ status: boolean; }'.
-src/actions/user.ts(74,19): error TS2339: Property 'error' does not exist on type '{ token: string; user: { id: string; email: string; name: string; image: string; emailVerified: boolean; createdAt: Date; updatedAt: Date; }; }'.
-src/actions/user.ts(77,27): error TS2339: Property 'error' does not exist on type '{ token: string; user: { id: string; email: string; name: string; image: string; emailVerified: boolean; createdAt: Date; updatedAt: Date; }; }'.
-src/components/icon/logo.tsx(5,60): error TS2322: Type '"auto"' is not assignable to type 'number | `${number}`'.
-src/components/layout/auth/sign-up.tsx(91,15): error TS2339: Property '_' does not exist on type 'Data<NonNullable<{ redirect: boolean; url: string; } | { redirect: boolean; token: string; url: undefined; user: { id: string; createdAt: Date; updatedAt: Date; email: string; emailVerified: boolean; name: string; image?: string; }; }>> | Error$1<...>'.
-src/components/layout/chat/chat-room.tsx(85,19): error TS2345: Argument of type '(prev: { id: string; createdAt: Date; updatedAt: Date; type: MessageType; content: string; edited: boolean; editedAt: Date; isAI: boolean; repliedToId: string; forwardedFromId: string; senderId: string; conversationId: string; }[]) => ({ ...; } | { ...; })[]' is not assignable to parameter of type 'SetStateAction<{ id: string; createdAt: Date; updatedAt: Date; type: MessageType; content: string; edited: boolean; editedAt: Date; isAI: boolean; repliedToId: string; forwardedFromId: string; senderId: string; conversationId: string; }[]>'.
-  Type '(prev: { id: string; createdAt: Date; updatedAt: Date; type: MessageType; content: string; edited: boolean; editedAt: Date; isAI: boolean; repliedToId: string; forwardedFromId: string; senderId: string; conversationId: string; }[]) => ({ ...; } | { ...; })[]' is not assignable to type '(prevState: { id: string; createdAt: Date; updatedAt: Date; type: MessageType; content: string; edited: boolean; editedAt: Date; isAI: boolean; repliedToId: string; forwardedFromId: string; senderId: string; conversationId: string; }[]) => { ...; }[]'.
-    Type '({ id: string; createdAt: Date; updatedAt: Date; type: MessageType; content: string; edited: boolean; editedAt: Date; isAI: boolean; repliedToId: string; forwardedFromId: string; senderId: string; conversationId: string; } | { ...; })[]' is not assignable to type '{ id: string; createdAt: Date; updatedAt: Date; type: MessageType; content: string; edited: boolean; editedAt: Date; isAI: boolean; repliedToId: string; forwardedFromId: string; senderId: string; conversationId: string; }[]'.
-      Type '{ id: string; createdAt: Date; updatedAt: Date; type: MessageType; content: string; edited: boolean; editedAt: Date; isAI: boolean; repliedToId: string; forwardedFromId: string; senderId: string; conversationId: string; } | { ...; }' is not assignable to type '{ id: string; createdAt: Date; updatedAt: Date; type: MessageType; content: string; edited: boolean; editedAt: Date; isAI: boolean; repliedToId: string; forwardedFromId: string; senderId: string; conversationId: string; }'.
-        Type '{ id: string; content: string; senderId: string; sender: { id: string; name: string; image: any; }; createdAt: Date; type: string; edited: boolean; }' is missing the following properties from type '{ id: string; createdAt: Date; updatedAt: Date; type: MessageType; content: string; edited: boolean; editedAt: Date; isAI: boolean; repliedToId: string; forwardedFromId: string; senderId: string; conversationId: string; }': updatedAt, editedAt, isAI, repliedToId, and 2 more.
-src/components/layout/chat/chat-room.tsx(150,23): error TS2322: Type '{ conversationId: string; }' is not assignable to type 'IntrinsicAttributes & { link?: string; avatar: any; name?: string; email?: string; }'.
-  Property 'conversationId' does not exist on type 'IntrinsicAttributes & { link?: string; avatar: any; name?: string; email?: string; }'.
-src/components/layout/chat/chat-room.tsx(176,38): error TS2551: Property 'sender' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; type: MessageType; content: string; edited: boolean; editedAt: Date; isAI: boolean; repliedToId: string; forwardedFromId: string; senderId: string; conversationId: string; }'. Did you mean 'senderId'?
-src/components/layout/chat/chat-room.tsx(200,16): error TS2322: Type '(e: React.FormEvent) => Promise<void>' is not assignable to type '() => void'.
-  Target signature provides too few arguments. Expected 1 or more, but got 0.
-src/components/layout/chat/msg-input.tsx(142,28): error TS2322: Type '{ children: Element; type: "button"; variant: string; size: string; className: string; }' is not assignable to type 'DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>'.
-  Property 'variant' does not exist on type 'DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>'.
-src/components/layout/chat/msg-input.tsx(226,25): error TS2322: Type '{ children: Element; disabled: true; type: "button"; variant: string; size: string; className: string; }' is not assignable to type 'DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>'.
-  Property 'variant' does not exist on type 'DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>'.
-src/components/layout/chat/msg-input.tsx(235,25): error TS2322: Type '{ children: Element; disabled: true; type: "button"; variant: string; size: string; className: string; }' is not assignable to type 'DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>'.
-  Property 'variant' does not exist on type 'DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>'.
-src/components/layout/home/nav.tsx(193,39): error TS2322: Type '{ children: Element[]; asChild: true; }' is not assignable to type 'IntrinsicAttributes & DropdownMenuProps'.
-  Property 'asChild' does not exist on type 'IntrinsicAttributes & DropdownMenuProps'.
-src/components/layout/home/show-case.tsx(59,21): error TS2322: Type '(_t: number) => (t: any) => number' is not assignable to type 'EasingFunction'.
-  Type '(t: any) => number' is not assignable to type 'number'.
-src/components/layout/home/show-case.tsx(110,32): error TS2741: Property 'id' is missing in type '{ sender: "user" | "other"; url: string; content: "Hi bro ☺️" | "How are you my friend 👋" | "Very well 👌" | "Ok what's wrong" | "Can I ask  you some thing" | "Now 😩" | "a detailed report about todays job 🚨"; timestamp: Date; demo: true; }' but required in type 'MessageProps'.
-src/components/layout/pages/about.tsx(26,3): error TS2339: Property '_value' does not exist on type 'StatItemProps'.
-src/components/layout/pages/about.tsx(30,3): error TS2339: Property '_decimalPlaces' does not exist on type 'StatItemProps'.
-src/components/layout/settings/account-settings.tsx(70,19): error TS2322: Type '{ bio: any; job: any; country: any; id: string; createdAt: Date; updatedAt: Date; emailVerified: boolean; name: string; email?: string; image?: string; }' is not assignable to type 'Profile'.
-  Property 'email' is optional in type '{ bio: any; job: any; country: any; id: string; createdAt: Date; updatedAt: Date; emailVerified: boolean; name: string; email?: string; image?: string; }' but required in type 'Profile'.
-src/components/layout/settings/account-settings.tsx(150,41): error TS2322: Type '{ user: { bio: any; job: any; country: any; id: string; createdAt: Date; updatedAt: Date; emailVerified: boolean; name: string; email?: string; image?: string; }; session: { id: string; createdAt: Date; ... 5 more ...; userAgent?: string; }; }' is not assignable to type '{ user: { email: string; }; }'.
-  Types of property 'user' are incompatible.
-    Type '{ bio: any; job: any; country: any; id: string; createdAt: Date; updatedAt: Date; emailVerified: boolean; name: string; email?: string; image?: string; }' is not assignable to type '{ email: string; }'.
-      Property 'email' is optional in type '{ bio: any; job: any; country: any; id: string; createdAt: Date; updatedAt: Date; emailVerified: boolean; name: string; email?: string; image?: string; }' but required in type '{ email: string; }'.
-src/components/layout/settings/account-settings.tsx(247,41): error TS2322: Type '{ user: { bio: any; job: any; country: any; id: string; createdAt: Date; updatedAt: Date; emailVerified: boolean; name: string; email?: string; image?: string; }; session: { id: string; createdAt: Date; ... 5 more ...; userAgent?: string; }; }' is not assignable to type '{ user: { email: string; }; }'.
-  Types of property 'user' are incompatible.
-    Type '{ bio: any; job: any; country: any; id: string; createdAt: Date; updatedAt: Date; emailVerified: boolean; name: string; email?: string; image?: string; }' is not assignable to type '{ email: string; }'.
-      Property 'email' is optional in type '{ bio: any; job: any; country: any; id: string; createdAt: Date; updatedAt: Date; emailVerified: boolean; name: string; email?: string; image?: string; }' but required in type '{ email: string; }'.
-src/components/layout/settings/catagory-settings.tsx(56,36): error TS2304: Cannot find name 'ClickEvent'.
-src/components/layout/settings/catagory-settings.tsx(154,44): error TS2339: Property '_index' does not exist on type '{ id: string; name: string; index: number; }'.
-src/components/layout/settings/privacy-settings.tsx(196,23): error TS2741: Property 'value' is missing in type '{ children: Element; }' but required in type 'AccordionMultiselectOptionProps'.
-src/components/layout/settings/privacy-settings.tsx(236,23): error TS2741: Property 'value' is missing in type '{ children: Element; }' but required in type 'AccordionMultiselectOptionProps'.
-src/components/layout/settings/privacy-settings.tsx(275,23): error TS2741: Property 'value' is missing in type '{ children: Element; }' but required in type 'AccordionMultiselectOptionProps'.
-src/components/layout/settings/privacy-settings.tsx(314,23): error TS2741: Property 'value' is missing in type '{ children: Element; }' but required in type 'AccordionMultiselectOptionProps'.
-src/components/layout/settings/privacy-settings.tsx(353,23): error TS2741: Property 'value' is missing in type '{ children: Element; }' but required in type 'AccordionMultiselectOptionProps'.
-src/components/layout/settings/settings.tsx(36,27): error TS2322: Type 'LucideIcon' is not assignable to type 'ReactNode'.
-  Type 'ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>' is missing the following properties from type 'ReactPortal': children, type, props, key
-src/components/layout/settings/settings.tsx(60,5): error TS2322: Type 'Element' is not assignable to type 'LucideIcon'.
-  Types of property '$$typeof' are incompatible.
-    Type 'string | symbol' is not assignable to type 'symbol'.
-      Type 'string' is not assignable to type 'symbol'.
-src/components/layout/settings/settings.tsx(66,5): error TS2322: Type 'Element' is not assignable to type 'LucideIcon'.
-  Types of property '$$typeof' are incompatible.
-    Type 'string | symbol' is not assignable to type 'symbol'.
-      Type 'string' is not assignable to type 'symbol'.
-src/components/layout/settings/settings.tsx(72,5): error TS2322: Type 'Element' is not assignable to type 'LucideIcon'.
-  Types of property '$$typeof' are incompatible.
-    Type 'string | symbol' is not assignable to type 'symbol'.
-      Type 'string' is not assignable to type 'symbol'.
-src/components/layout/settings/settings.tsx(78,5): error TS2322: Type 'Element' is not assignable to type 'LucideIcon'.
-  Types of property '$$typeof' are incompatible.
-    Type 'string | symbol' is not assignable to type 'symbol'.
-      Type 'string' is not assignable to type 'symbol'.
-src/components/layout/settings/settings.tsx(84,5): error TS2322: Type 'Element' is not assignable to type 'LucideIcon'.
-  Types of property '$$typeof' are incompatible.
-    Type 'string | symbol' is not assignable to type 'symbol'.
-      Type 'string' is not assignable to type 'symbol'.
-src/components/providers/providers.tsx(14,57): error TS2314: Generic type 'ComponentProps' requires 1 type argument(s).
-src/components/shared/theme-switcher.tsx(115,13): error TS2322: Type 'string' is not assignable to type 'AnimationVariant'.
-src/components/shared/theme-toggler-button.tsx(602,3): error TS2339: Property 'ref' does not exist on type '{ className?: string; variant?: AnimationVariant; start?: AnimationStart; blur?: boolean; gifUrl?: string; }'.
-src/lib/auth.ts(66,7): error TS1117: An object literal cannot have multiple properties with the same name.
-src/lib/auth.ts(135,26): error TS2339: Property 'bio' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; emailVerified: boolean; name: string; email?: string; image?: string; }'.
-src/lib/auth.ts(136,26): error TS2339: Property 'job' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; emailVerified: boolean; name: string; email?: string; image?: string; }'.
-src/lib/auth.ts(137,30): error TS2339: Property 'country' does not exist on type '{ id: string; createdAt: Date; updatedAt: Date; emailVerified: boolean; name: string; email?: string; image?: string; }'.
+src/app/(dashboard)/chats/page.tsx(13,8): error TS2741: Property 'users' is missing in type '{}' but required in type 'UserListProps'.
+src/hooks/use-conversation.ts(3,15): error TS2305: Module '"@prisma/client"' has no exported member 'Message'.
+src/hooks/use-conversation.ts(51,24): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(event: ConnectionEvent, callback: connectionEventCallback): void', gave the following error.
+    Argument of type '"connectionstate"' is not assignable to parameter of type 'ConnectionEvent'.
+  Overload 2 of 3, '(events: ConnectionEvent[], callback: connectionEventCallback): void', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'ConnectionEvent[]'.
+src/hooks/use-conversation.ts(76,27): error TS2345: Argument of type '"connectionstate"' is not assignable to parameter of type 'ConnectionEvent'.
+
+
+
+npx tsc
+src/app/(dashboard)/chats/page.tsx:13:8 - error TS2741: Property 'users' is missing in type '{}' but required in type 'UserListProps'.
+
+13       <CategorizedChats />
+          ~~~~~~~~~~~~~~~~
+
+  src/components/layout/chat/user-list.tsx:46:3
+    46   users: User[];
+         ~~~~~
+    'users' is declared here.
+
+src/hooks/use-conversation.ts:3:15 - error TS2305: Module '"@prisma/client"' has no exported member 'Message'.
+
+3 import type { Message } from '@prisma/client';
+                ~~~~~~~
+
+src/hooks/use-conversation.ts:51:24 - error TS2769: No overload matches this call.
+  Overload 1 of 3, '(event: ConnectionEvent, callback: connectionEventCallback): void', gave the following error.
+    Argument of type '"connectionstate"' is not assignable to parameter of type 'ConnectionEvent'.
+  Overload 2 of 3, '(events: ConnectionEvent[], callback: connectionEventCallback): void', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'ConnectionEvent[]'.
+
+51     ably.connection.on('connectionstate', onConnectionChangeHandler);
+                          ~~~~~~~~~~~~~~~~~
+
+
+src/hooks/use-conversation.ts:76:27 - error TS2345: Argument of type '"connectionstate"' is not assignable to parameter of type 'ConnectionEvent'.
+
+76       ably.connection.off('connectionstate', onConnectionChangeHandler);
+                             ~~~~~~~~~~~~~~~~~
+
+
+Found 4 errors in 2 files.
+
+Errors  Files
+     1  src/app/(dashboard)/chats/page.tsx:13
+     3  src/hooks/use-conversation.ts:3

@@ -93,7 +93,7 @@ npm run dev
 
 # Frontend
 
-· Next.js 15 - React framework with App Router
+· Next.js 16 - React framework with App Router
 · TypeScript - Type safety and better developer experience
 · Tailwind CSS - Utility-first CSS framework
 · shadcn/ui - Reusable UI component library

@@ -8,6 +8,7 @@ import {
   Pin,
   Trash,
   Reply,
+  Pen
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -163,6 +164,7 @@ function Message({
                           }
                         }}
                       >
+                      <Pen/>
                         <span>Edit</span>
                       </DropdownMenuItem>
                     )}
