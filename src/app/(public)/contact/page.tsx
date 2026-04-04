@@ -27,13 +27,13 @@ export const contactMetadata: Metadata = {
   ].join(", "),
 
   alternates: {
-    canonical: "https://hyper-chat.vercel.app/contact",
+    canonical: "https://hyperchatai.vercel.app/contact",
   },
 
   other: {
     "business:contact_data:email": "support@hyperchat.app",
     "business:contact_data:phone_number": "+1-XXX-XXX-XXXX",
-    "business:contact_data:website": "https://hyper-chat.vercel.app",
+    "business:contact_data:website": "https://hyperchatai.vercel.app",
     "business:contact_data:contact_type": "customer support",
   },
 };

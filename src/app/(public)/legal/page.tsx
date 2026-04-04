@@ -275,7 +275,7 @@ export const legalMetadata: Metadata = {
   ].join(", "),
 
   alternates: {
-    canonical: "https://hyper-chat.vercel.app/legal",
+    canonical: "https://hyperchatai.vercel.app/legal",
   },
 
   robots: {

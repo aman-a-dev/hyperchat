@@ -26,7 +26,7 @@ export const pricingMetadata: Metadata = {
   ].join(", "),
 
   alternates: {
-    canonical: "https://hyper-chat.vercel.app/pricing",
+    canonical: "https://hyperchatai.vercel.app/pricing",
   },
 
   other: {

@@ -25,7 +25,7 @@ export default function RootLayout({
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://hyper-chat.vercel.app"),
+  metadataBase: new URL("https://hyperchatai.vercel.app"),
   title: "HyperChat | AI-Powered Realtime Chat Platform",
   description:
     "Experience next-generation communication with HyperChat - an AI-enhanced realtime chat platform featuring smart replies, voice commands, and seamless collaboration.",
@@ -165,7 +165,7 @@ export const metadata: Metadata = {
     title: "HyperChat - AI-Powered Realtime Chat Platform",
     description:
       "Transform your communication with HyperChat. AI-enhanced realtime messaging platform with smart features for teams and communities.",
-    url: "https://hyper-chat.vercel.app",
+    url: "https://hyperchatai.vercel.app",
     siteName: "HyperChat",
     type: "website",
     images: [
@@ -190,7 +190,7 @@ export const metadata: Metadata = {
   },
 
   alternates: {
-    canonical: "https://hyper-chat.vercel.app",
+    canonical: "https://hyperchatai.vercel.app",
   },
 
   classification:

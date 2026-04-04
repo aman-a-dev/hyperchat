@@ -26,7 +26,7 @@ export const blogMetadata: Metadata = {
   ].join(", "),
 
   alternates: {
-    canonical: "https://hyper-chat.vercel.app/blog",
+    canonical: "https://hyperchatai.vercel.app/blog",
   },
 
   other: {

@@ -27,7 +27,7 @@ export const aboutMetadata: Metadata = {
   ].join(", "),
 
   alternates: {
-    canonical: "https://hyper-chat.vercel.app/about",
+    canonical: "https://hyperchatai.vercel.app/about",
   },
 
   other: {

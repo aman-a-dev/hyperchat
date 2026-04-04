@@ -77,7 +77,7 @@ export default function Signup() {
     } catch (error: any) {
       console.error("Signup error:", error);
       toast.error("An error occurred", {
-        description: "Please try again",
+        description: error,
       });
     } finally {
       setLoading(false);

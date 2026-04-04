@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /legal
 Disallow: /admin/
-Sitemap: https://hyper-chat.vercel.app/sitemap.xml
+Sitemap: https://hyperchatai.vercel.app/sitemap.xml
