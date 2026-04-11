@@ -7,7 +7,7 @@ import { getAblyClient } from '@/lib/ably'
 import { useSession } from '@/lib/auth-client'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
-import { RefreshCw, Bug ,Box} from 'lucide-react'
+import { RefreshCw, Bug, Box } from 'lucide-react'
 
 export default function CategorizedChats() {
    const { data: session } = useSession()
@@ -51,7 +51,7 @@ export default function CategorizedChats() {
       id: c.id,
       name: c.otherUser?.name || 'Unknown',
       email: c.otherUser?.email || '',
-      src: c.otherUser?.image || '/avatar.png',
+      src: c.otherUser?.image || '/',
       online: false,
       link: `/chats/${c.id}`,
       lastMsg: c.lastMessage?.content || 'No messages yet',
@@ -61,7 +61,7 @@ export default function CategorizedChats() {
    if (loading) {
       return (
          <div className='h-full w-full mb-16 space-y-2 p-4'>
-            {Array.from({ length: 5 }).map((_, i) => (
+            {Array.from({ length: 20 }).map((_, i) => (
                <Skeleton
                   key={i}
                   className='h-20 w-full rounded-xl'
@@ -152,7 +152,7 @@ export default function CategorizedChats() {
          {/* Main content */}
          {userItems.length === 0 ? (
             <div className='h-[90vh] flex flex-col items-center justify-center'>
-            <Box className='w-24 h-24 bg-muted rounded-full mb-4' />
+               <Box className='w-24 h-24 text-muted mb-4' />
                <h2 className='text-2xl font-bold'>No Chat Yet.</h2>
                <p className='text-muted-foreground mb-4'>
                   This category doesn't contain any users.

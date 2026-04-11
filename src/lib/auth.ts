@@ -2,7 +2,7 @@
 import { betterAuth } from 'better-auth'
 // orm
 import { prismaAdapter } from 'better-auth/adapters/prisma'
-import { prisma } from './prisma'
+import prisma from '@/lib/prisma';
 // plugins
 import { customSession } from 'better-auth/plugins'
 // email
@@ -15,9 +15,9 @@ const to = process.env.TEST_EMAIL || ''
 export const auth = betterAuth({
    appName: 'Hyperchat',
    baseURL: process.env.BETTER_AUTH_URL,
-   database: prismaAdapter(prisma, {
-      provider: 'mysql'
-   }),
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
+  }),
    account: {
       accountLinking: {
          trustedProviders: ['google']
@@ -131,7 +131,7 @@ export const auth = betterAuth({
          }
       })
    ],
-   trustedOrigins: ['http://localhost:3000','https://hyperchatai.vercel.app/']
+   trustedOrigins: ['http://localhost:3000', 'https://hyperchatai.vercel.app/']
 })
 
 import { headers } from 'next/headers'

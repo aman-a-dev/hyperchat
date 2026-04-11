@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth"; // your Better Auth instance
-import { prisma } from "@/lib/prisma"; // your Prisma client
+import prisma from '@/lib/prisma'; // your Prisma client
 import { put } from "@vercel/blob"; // example storage – replace with your own
 
 // Helper to get session

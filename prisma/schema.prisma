@@ -1,22 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
 }
 
-// =============== BETTER AUTH TABLES (DON'T MODIFY THESE) ===============
+
+// =============== BETTER AUTH TABLES ===============
 
 model User {
   id            String    @id
   name          String
-  email         String
+  email         String    @unique
   emailVerified Boolean
-  image         String?   @db.Text
-  createdAt     DateTime
-  updatedAt     DateTime
+  image         String?   
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
   
   bio           String?
   job           String?
@@ -25,33 +32,22 @@ model User {
   sessions      Session[]
   accounts      Account[]
   
-  // Remove this line:
-  // conversations Conversation[] @relation("ConversationParticipants")
-  
-  // Add this line:
   userConversations UserConversation[]
-  
-  messages      Message[]
-  settings      Settings?
+  messages          Message[]
+  settings          Settings?
 
-  @@unique([email])
   @@map("user")
 }
 
 model Conversation {
   id        String    @id @default(cuid())
-  image     String?   @db.Text
+  image     String?   
   name      String?
   isGroup   Boolean   @default(false)
   createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
+  updatedAt DateTime  @updatedAt
 
   messages  Message[]
-  
-  // Remove this line:
-  // users     User[]    @relation("ConversationParticipants")
-  
-  // Add this line:
   userConversations UserConversation[]
 
   @@index([createdAt])
@@ -62,7 +58,7 @@ model UserConversation {
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   conversationId String
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  lastReadAt     DateTime?    // when the user last read this conversation
+  lastReadAt     DateTime?    
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
@@ -74,60 +70,51 @@ model UserConversation {
 model Session {
   id        String   @id
   expiresAt DateTime
-  token     String   
+  token     String
   createdAt DateTime
   updatedAt DateTime
   ipAddress String?
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@unique([token])
   @@map("session")
 }
-
 model Account {
   id                    String    @id
-  accountId             String    @db.Text
-  providerId            String    @db.Text
+  accountId             String
+  providerId            String
   userId                String
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?   @db.Text
-  refreshToken          String?   @db.Text
-  idToken               String?   @db.Text
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
   createdAt             DateTime
   updatedAt             DateTime
-
   @@map("account")
 }
-
 model Verification {
   id         String    @id
   identifier String
-  value      String    @db.Text
+  value      String
   expiresAt  DateTime
   createdAt  DateTime?
   updatedAt  DateTime?
-
   @@map("verification")
 }
-// =============== END BETTER AUTH TABLES ===============
 
 // =============== YOUR CUSTOM TABLES ===============
 
-
-
 model Message {
   id             String       @id @default(cuid())
-  content        String       @db.Text
+  content        String       
   createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @default(now()) @updatedAt
+  updatedAt      DateTime     @updatedAt
   
-  // editing & replies
   edited         Boolean      @default(false)
   editedAt       DateTime?
   
@@ -159,26 +146,22 @@ model Settings {
   userId         String       @unique
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  // Visibility Settings
   onlineStatusVisible Boolean  @default(true)
   lastSeenVisible     Boolean  @default(true)
   bioVisible          Boolean  @default(true)
   jobVisible          Boolean  @default(true)
   countryVisible      Boolean  @default(true)
   
-  // Sync & Search Settings
   syncEmails      Boolean      @default(true)
   allowSearch     Boolean      @default(true)
   
-  // Message Settings
   showTypingStatus Boolean      @default(true)
   
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @default(now()) @updatedAt
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
   
   @@map("settings")
 }
-
 
 enum MessageType {
   TEXT
