@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
       where: { id: session.user.id },
       data: { image: blob.url },
     });
-
+    console.log(updatedUser)
     return NextResponse.json({ success: true, imageUrl: blob.url });
   } catch (error: any) {
     console.error("POST /api/user-data error:", error);
