@@ -51,8 +51,6 @@ export default function AccountSettings() {
    const [avatarKey, setAvatarKey] = useState(Date.now())
    const {
       data: session,
-      _isPending, //loading state
-      _error, //error object
       refetch //refetch the session
    } = authClient.useSession()
 
