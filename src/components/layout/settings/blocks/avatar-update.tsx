@@ -10,10 +10,12 @@ import { Sparkles, UploadCloud } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { validateImage } from "@/actions/validation";
+import { authClient } from "@/lib/auth-client";
 
 interface AvatarOperationProps {
   session: {
     user: {
+      id: string;
       name: string;
       image?: string | null;
     };
@@ -30,15 +32,14 @@ export function AvatarOperation({
   const [isLoading, setIsLoading] = useState(false);
   const [currentImage, setCurrentImage] = useState(session?.user?.image || "");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { refetch } = authClient.useSession(); // 🔥 Get refetch function
 
-  // Clean up preview URL
   useEffect(() => {
     return () => {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
     };
   }, [previewUrl]);
 
-  // ✅ Define handleFileChange
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -52,7 +53,6 @@ export function AvatarOperation({
       return;
     }
 
-    // Create preview
     const url = URL.createObjectURL(file);
     setSelectedFile(file);
     setPreviewUrl(url);
@@ -79,19 +79,38 @@ export function AvatarOperation({
 
       const result = await res.json();
 
-      if (!res.ok) throw new Error(result.error || "Upload failed");
+      if (!res.ok) {
+        // 🔥 Handle 401 specifically
+        if (res.status === 401) {
+          toast.error("Session expired. Refreshing...");
+          await refetch(); // Refresh the session
+          // Retry the upload after session refresh
+          const retryRes = await fetch("/api/user-data", {
+            method: "POST",
+            body: formData,
+          });
+          const retryResult = await retryRes.json();
+          if (!retryRes.ok) throw new Error(retryResult.error || "Upload failed");
+          if (retryResult.imageUrl) {
+            setCurrentImage(retryResult.imageUrl);
+            onAvatarUpdated?.(retryResult.imageUrl);
+            toast.success("Profile picture updated successfully");
+            resetForm();
+          }
+          return;
+        }
+        throw new Error(result.error || "Upload failed");
+      }
 
       if (result.imageUrl) {
         setCurrentImage(result.imageUrl);
         onAvatarUpdated?.(result.imageUrl);
         toast.success("Profile picture updated successfully");
-
-        // Reset file input
-        setSelectedFile(null);
-        setPreviewUrl(null);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
+        
+        // 🔥 Refresh the session to update the user image in the client
+        await refetch();
+        
+        resetForm();
       }
     } catch (err) {
       toast.error("An Error Occurred", {
@@ -99,6 +118,14 @@ export function AvatarOperation({
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const resetForm = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 

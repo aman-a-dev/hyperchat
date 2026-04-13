@@ -1,13 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth"; // your Better Auth instance
-import prisma from '@/lib/prisma'; // your Prisma client
-import { put } from "@vercel/blob"; // example storage – replace with your own
+import { auth } from "@/lib/auth";
+import prisma from '@/lib/prisma';
+import { put } from "@vercel/blob";
 
-// Helper to get session
+// Helper to get session with proper error handling
 async function getSession(req: NextRequest) {
-  const session = await auth.api.getSession({ headers: req.headers });
-  if (!session) throw new Error("Unauthorized");
-  return session;
+  try {
+    const session = await auth.api.getSession({ 
+      headers: Object.fromEntries(req.headers.entries())
+    });
+    if (!session) throw new Error("Unauthorized");
+    return session;
+  } catch (error) {
+    console.error("Session error:", error);
+    throw new Error("Unauthorized");
+  }
 }
 
 // PATCH: update personal details (JSON)
@@ -16,13 +23,11 @@ export async function PATCH(req: NextRequest) {
     const session = await getSession(req);
     const body = await req.json();
 
-    // Allowed fields to update
     const allowedFields = ["name", "bio", "job", "country"];
     const updateData: Record<string, any> = {};
 
     for (const field of allowedFields) {
       if (body[field] !== undefined) {
-        // optional: add validation here
         updateData[field] = body[field];
       }
     }
@@ -39,13 +44,17 @@ export async function PATCH(req: NextRequest) {
       data: updateData,
     });
 
+    // 🔥 Force session refresh by updating updatedAt
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { updatedAt: new Date() },
+    });
+
     return NextResponse.json({ success: true, user: updatedUser });
   } catch (error: any) {
     console.error("PATCH /api/user-data error:", error);
     return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Internal server error",
-      },
+      { error: error instanceof Error ? error.message : "Internal server error" },
       { status: 500 },
     );
   }
@@ -53,8 +62,11 @@ export async function PATCH(req: NextRequest) {
 
 // POST: upload avatar (multipart/form-data)
 export async function POST(req: NextRequest) {
+  let userId: string | null = null;
+  
   try {
     const session = await getSession(req);
+    userId = session.user.id;
 
     const formData = await req.formData();
     const file = formData.get("avatar") as File | null;
@@ -63,8 +75,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
 
-    // Validate file (similar to client-side validateImage)
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    // Validate file
+    const maxSize = 5 * 1024 * 1024;
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
     if (file.size > maxSize) {
@@ -77,9 +89,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
     }
 
-    // Upload to storage – example using Vercel Blob (or any other)
-    // Replace with your own upload logic (S3, Uploadthing, etc.)
-    const blob = await put(file.name, file, {
+    // Upload to Vercel Blob
+    const blob = await put(`avatars/${session.user.id}-${Date.now()}.${file.type.split('/')[1]}`, file, {
       access: "public",
       addRandomSuffix: true,
     });
@@ -87,16 +98,28 @@ export async function POST(req: NextRequest) {
     // Update user's image field
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
-      data: { image: blob.url },
+      data: { image: blob.url, updatedAt: new Date() },
     });
-    console.log(updatedUser)
-    return NextResponse.json({ success: true, imageUrl: blob.url });
+
+    // 🔥 Return the updated user data so the client can update the session
+    return NextResponse.json({ 
+      success: true, 
+      imageUrl: blob.url,
+      user: updatedUser
+    });
   } catch (error: any) {
     console.error("POST /api/user-data error:", error);
+    
+    // 🔥 If the error is authentication-related, don't log out the user
+    if (error.message === "Unauthorized") {
+      return NextResponse.json(
+        { error: "Session expired. Please refresh the page." },
+        { status: 401 },
+      );
+    }
+    
     return NextResponse.json(
-      {
-        error: error instanceof Error ? error.message : "Internal server error",
-      },
+      { error: error instanceof Error ? error.message : "Internal server error" },
       { status: 500 },
     );
   }
