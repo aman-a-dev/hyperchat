@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, memo } from "react";
+import { useEffect, useRef, useState, memo, useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import {
@@ -14,35 +14,32 @@ import {
   Sparkles,
   Check,
 } from "lucide-react";
-import { toast } from "sonner"; // <-- import sonner
-
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { InfiniteSlider } from "@/components/ui/infinite-slider";
-import ClientOnly from "@/components/shared/client-only";
 import { cn } from "@/lib/utils";
 
-/* ---------------- TYPES ---------------- */
 type StylePreset = "Realistic" | "Anime" | "Cinematic" | "Pixel" | "Minimal";
 
-type ChatMessage =
-  | {
-      id: number;
-      role: "user";
-      content: string;
-      style: StylePreset;
-      image?: string;
-    }
-  | {
-      id: number;
-      role: "ai";
-      images: string[]; // base64 strings
-      prompt: string;
-      style: StylePreset;
-    };
+interface UserMessage {
+  id: number;
+  role: "user";
+  content: string;
+  style: StylePreset;
+  image?: string;
+}
 
-/* ---------------- DEMO DATA ---------------- */
-const STYLE_PRESETS: { label: StylePreset; icon: React.ReactNode }[] = [
+interface AIMessage {
+  id: number;
+  role: "ai";
+  images: string[]; // base64 strings
+  prompt: string;
+  style: StylePreset;
+}
+
+type ChatMessage = UserMessage | AIMessage;
+
+const STYLE_PRESETS: { label: StylePreset; icon: string }[] = [
   { label: "Realistic", icon: "🎨" },
   { label: "Anime", icon: "🌸" },
   { label: "Cinematic", icon: "🎬" },
@@ -50,7 +47,6 @@ const STYLE_PRESETS: { label: StylePreset; icon: React.ReactNode }[] = [
   { label: "Minimal", icon: "⚪" },
 ];
 
-/* ---------------- HELPER ---------------- */
 function base64ToBlob(base64: string, mimeType = "image/png"): Blob {
   const byteCharacters = atob(base64);
   const byteArrays = [];
@@ -66,82 +62,70 @@ function base64ToBlob(base64: string, mimeType = "image/png"): Blob {
   return new Blob(byteArrays, { type: mimeType });
 }
 
-/* ---------------- COMPONENT ---------------- */
 function AIProfile() {
   const [started, setStarted] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [style, setStyle] = useState<StylePreset>("Realistic");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
-  const [typing, setTyping] = useState("");
   const [upload, setUpload] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const bottomRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const fileRef = useRef<HTMLInputElement | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
-  // Auto-scroll
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, typing]);
+  }, [messages]);
 
-  async function streamTyping(text: string) {
-    setTyping("");
-    for (let i = 0; i < text.length; i++) {
-      await new Promise((r) => setTimeout(r, 20));
-      setTyping((prev) => prev + text[i]);
-    }
-    setTimeout(() => setTyping(""), 1000);
-  }
+  const generateImages = useCallback(
+    async (promptText: string, preset: StylePreset) => {
+      setLoading(true);
+      const toastId = toast.loading("Generating your avatar...");
 
-  async function generate(promptText: string, preset: StylePreset) {
-    setLoading(true);
-    const toastId = toast.loading("Generating your avatar...");
+      try {
+        const response = await fetch("/api/ai/avatar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: promptText, style: preset }),
+        });
 
-    try {
-      const response = await fetch("/api/ai/avatar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: promptText, style: preset }),
-      });
+        const data = await response.json();
 
-      const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to generate images");
+        }
 
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to generate images");
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: Date.now(),
+            role: "ai",
+            images: data.images,
+            prompt: promptText,
+            style: preset,
+          },
+        ]);
+
+        toast.success("Images generated successfully!", { id: toastId });
+      } catch (error: any) {
+        console.error("Generation error:", error);
+        toast.error(error.message || "Image generation failed. Please try again.", {
+          id: toastId,
+        });
+      } finally {
+        setLoading(false);
       }
+    },
+    []
+  );
 
-      const images: string[] = data.images;
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now(),
-          role: "ai",
-          images,
-          prompt: promptText,
-          style: preset,
-        },
-      ]);
-
-      toast.success("Images generated successfully!", { id: toastId });
-    } catch (error: any) {
-      console.error("Generation error:", error);
-      toast.error(
-        error.message || "Image generation failed. Please try again.",
-        { id: toastId },
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleSend() {
-    if (!prompt.trim() && !upload) return;
+  const handleSend = useCallback(async () => {
+    if ((!prompt.trim() && !upload) || loading) return;
     if (!started) setStarted(true);
 
-    const userPrompt = prompt;
+    const userPrompt = prompt.trim() || "Generate an avatar";
     const preset = style;
 
     setMessages((prev) => [
@@ -149,7 +133,7 @@ function AIProfile() {
       {
         id: Date.now(),
         role: "user",
-        content: userPrompt || "Uploaded an image",
+        content: userPrompt,
         style: preset,
         image: upload || undefined,
       },
@@ -157,21 +141,25 @@ function AIProfile() {
 
     setPrompt("");
     setUpload(null);
-    await generate(userPrompt, preset);
-  }
+    await generateImages(userPrompt, preset);
+  }, [prompt, upload, loading, started, style, generateImages]);
 
-  function handleRegenerate(msg: ChatMessage) {
-    if (msg.role !== "ai") return;
-    generate(msg.prompt, msg.style);
-  }
+  const handleRegenerate = useCallback(
+    (msg: AIMessage) => {
+      if (loading) return;
+      generateImages(msg.prompt, msg.style);
+    },
+    [loading, generateImages]
+  );
 
-  function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUpload(URL.createObjectURL(file));
-  }
+    const url = URL.createObjectURL(file);
+    setUpload(url);
+  };
 
-  function downloadImage(base64: string) {
+  const downloadImage = (base64: string) => {
     const blob = base64ToBlob(base64);
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -180,9 +168,9 @@ function AIProfile() {
     a.click();
     URL.revokeObjectURL(url);
     toast.success("Download started");
-  }
+  };
 
-  async function setAsProfile(base64Image: string) {
+  const setAsProfile = async (base64Image: string) => {
     setSelectedImage(base64Image);
     const toastId = toast.loading("Updating profile picture...");
 
@@ -198,20 +186,16 @@ function AIProfile() {
         credentials: "include",
       });
 
-      if (!response.ok) {
-        throw new Error("Upload failed");
-      }
+      if (!response.ok) throw new Error("Upload failed");
 
       toast.success("Profile picture updated!", { id: toastId });
       setTimeout(() => setSelectedImage(null), 2000);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Failed to set profile:", error);
-      toast.error("Failed to update profile picture. Please try again.", {
-        id: toastId,
-      });
+      toast.error("Failed to update profile picture. Please try again.", { id: toastId });
       setSelectedImage(null);
     }
-  }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -220,24 +204,36 @@ function AIProfile() {
     }
   };
 
+  const StartScreen = () => (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="h-full flex flex-col items-center justify-center text-center p-6"
+    >
+      <div className="max-w-md mx-auto space-y-6">
+        <div className="p-4 rounded-full bg-primary/10 w-fit mx-auto">
+          <Sparkles className="h-12 w-12 text-primary" />
+        </div>
+        <h1 className="text-3xl font-bold">AI Avatar Generator</h1>
+        <p className="text-muted-foreground">
+          Create unique avatars powered by Pollinations.ai. Describe your ideal avatar and choose a style.
+        </p>
+        <Button size="lg" onClick={() => setStarted(true)}>
+          Get Started
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
+    </motion.div>
+  );
+
   return (
     <div className="flex flex-col h-screen bg-gradient-to-b from-background via-background/95 to-background/90">
-      {/* MAIN CONTENT */}
       <main className="flex-1 overflow-hidden mt-10">
         <AnimatePresence mode="wait">
           {!started ? (
-            // ... start screen (unchanged) ...
-            <motion.div
-              key="start-screen"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="h-full flex flex-col overflow-scroll"
-            >
-              {/* same as before */}
-            </motion.div>
+            <StartScreen />
           ) : (
-            /* CHAT INTERFACE */
             <motion.div
               key="chat-interface"
               initial={{ opacity: 0 }}
@@ -246,21 +242,22 @@ function AIProfile() {
             >
               <div className="flex-1 overflow-y-auto px-4 py-6">
                 <div className="max-w-4xl mx-auto space-y-8">
-                  <AnimatePresence mode="wait">
-                    {messages.length === 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-center py-12"
-                      >
-                        {/* unchanged */}
-                      </motion.div>
-                    )}
+                  {messages.length === 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-center py-12"
+                    >
+                      <p className="text-muted-foreground">
+                        Describe your avatar and hit send!
+                      </p>
+                    </motion.div>
+                  )}
 
-                    {messages.map((msg) =>
-                      msg.role === "user" ? (
+                  {messages.map((msg) => (
+                    <div key={msg.id}>
+                      {msg.role === "user" ? (
                         <motion.div
-                          key={msg.id}
                           initial={{ opacity: 0, x: 20 }}
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -20 }}
@@ -268,9 +265,7 @@ function AIProfile() {
                         >
                           <div className="max-w-[80%]">
                             <div className="flex items-end gap-2 mb-1">
-                              <div className="text-xs text-muted-foreground">
-                                You
-                              </div>
+                              <div className="text-xs text-muted-foreground">You</div>
                               <div className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary">
                                 {msg.style}
                               </div>
@@ -296,52 +291,39 @@ function AIProfile() {
                         </motion.div>
                       ) : (
                         <motion.div
-                          key={msg.id}
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: 20 }}
                           className="space-y-4"
                         >
-                          {/* AI message header */}
                           <div className="flex items-center gap-2 mb-1">
                             <div className="p-1 rounded-md bg-primary/10">
                               <Sparkles className="h-3 w-3 text-primary" />
                             </div>
-                            <div className="text-xs font-medium">
-                              AI Generated
-                            </div>
+                            <div className="text-xs font-medium">AI Generated</div>
                             <div className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                               {msg.style}
                             </div>
                           </div>
 
-                          {/* Image Grid */}
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {msg.images.map((imgBase64, i) => (
+                            {msg.images.map((imgBase64, idx) => (
                               <motion.div
-                                key={i}
-                                initial={{
-                                  opacity: 0,
-                                  scale: 0.9,
-                                }}
-                                animate={{
-                                  opacity: 1,
-                                  scale: 1,
-                                }}
-                                transition={{ delay: i * 0.1 }}
+                                key={idx}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: idx * 0.1 }}
                                 className={cn(
                                   "group relative rounded-xl overflow-hidden border bg-card",
-                                  selectedImage === imgBase64 &&
-                                    "ring-2 ring-primary ring-offset-2",
+                                  selectedImage === imgBase64 && "ring-2 ring-primary ring-offset-2"
                                 )}
                               >
                                 <img
                                   src={`data:image/png;base64,${imgBase64}`}
-                                  alt={`Generated option ${i + 1}`}
+                                  alt={`Generated option ${idx + 1}`}
                                   className="w-full h-48 object-cover"
                                 />
 
-                                {/* Hover Overlay */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                                   <div className="absolute bottom-3 left-3 right-3 flex gap-2">
                                     <Button
@@ -359,18 +341,14 @@ function AIProfile() {
                                       variant="default"
                                       className="flex-1 gap-1"
                                       onClick={() => setAsProfile(imgBase64)}
-                                      disabled={
-                                        loading || selectedImage === imgBase64
-                                      }
+                                      disabled={loading || selectedImage === imgBase64}
                                     >
                                       {selectedImage === imgBase64 ? (
                                         <Check size={12} />
                                       ) : (
                                         <UserPen size={12} />
                                       )}
-                                      {selectedImage === imgBase64
-                                        ? "Selected"
-                                        : "Use"}
+                                      {selectedImage === imgBase64 ? "Selected" : "Set as Profile"}
                                     </Button>
                                   </div>
                                 </div>
@@ -378,7 +356,6 @@ function AIProfile() {
                             ))}
                           </div>
 
-                          {/* Regenerate Button */}
                           <div className="flex items-center gap-2">
                             <Button
                               size="sm"
@@ -392,25 +369,10 @@ function AIProfile() {
                             </Button>
                           </div>
                         </motion.div>
-                      ),
-                    )}
+                      )}
+                    </div>
+                  ))}
 
-                    {/* Typing Indicator */}
-                    {typing && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="flex items-center gap-2 text-sm text-muted-foreground"
-                      >
-                        <div className="flex gap-1">
-                          <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                          <div className="h-2 w-2 rounded-full bg-primary animate-pulse delay-150" />
-                          <div className="h-2 w-2 rounded-full bg-primary animate-pulse delay-300" />
-                        </div>
-                        {typing}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                   <div ref={bottomRef} />
                 </div>
               </div>
@@ -419,16 +381,13 @@ function AIProfile() {
         </AnimatePresence>
       </main>
 
-      {/* INPUT AREA - Fixed at bottom */}
       <div className="sticky bottom-0 border-t bg-background/95 backdrop-blur-lg">
         <div className="container mx-auto px-4 py-4">
           <div className="max-w-4xl mx-auto space-y-4">
             {/* Style Chips */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 w-full">
-                <span className="text-xs font-medium text-muted-foreground">
-                  Style:
-                </span>
+                <span className="text-xs font-medium text-muted-foreground">Style:</span>
                 <div className="flex gap-1 overflow-x-auto scrollbar-hide">
                   {STYLE_PRESETS.map(({ label, icon }) => (
                     <Button
@@ -486,7 +445,6 @@ function AIProfile() {
 
             {/* Input Area */}
             <div className="relative">
-              <div className="absolute -inset-0.5 rounded-xl blur-sm" />
               <div className="relative flex gap-2 p-2 rounded-xl bg-card border">
                 <input
                   ref={fileRef}
@@ -531,18 +489,11 @@ function AIProfile() {
               </div>
             </div>
 
-            {/* Helper Text */}
             <div className="text-center">
               <p className="text-xs text-muted-foreground">
                 Press{" "}
-                <kbd className="px-1.5 py-0.5 rounded border text-xs">
-                  Enter
-                </kbd>{" "}
-                to send •
-                <kbd className="mx-1 px-1.5 py-0.5 rounded border text-xs">
-                  Shift + Enter
-                </kbd>{" "}
-                for new line
+                <kbd className="px-1.5 py-0.5 rounded border text-xs">Enter</kbd> to send •
+                <kbd className="mx-1 px-1.5 py-0.5 rounded border text-xs">Shift + Enter</kbd> for new line
               </p>
             </div>
           </div>
