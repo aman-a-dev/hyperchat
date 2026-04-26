@@ -138,3 +138,47 @@ html {
     transform: rotate(3deg);
   }
 }
+
+
+@layer utilities {
+  .animate-canopy-horizontal {
+    animation: canopy-x var(--duration) infinite linear;
+  }
+ 
+  .animate-canopy-vertical {
+    animation: canopy-y var(--duration) linear infinite;
+  }
+ 
+  /* Reverse direction support */
+  .direction-reverse.animate-canopy-horizontal {
+    animation-direction: reverse;
+  }
+ 
+  .direction-reverse.animate-canopy-vertical {
+    animation-direction: reverse;
+  }
+ 
+  /* Pause on hover support */
+  .group:hover .group-hover\:paused {
+    animation-play-state: paused;
+  }
+}
+ 
+/* ---------------- KEYFRAMES ---------------- */
+@keyframes canopy-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+  }
+}
+ 
+@keyframes canopy-y {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+  }
+}
