@@ -187,7 +187,6 @@ export default function Nav() {
                 start="center"
                 className="hidden"
               />
-              // src/components/layout/home/nav.tsx (around line 193)
               {session ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
